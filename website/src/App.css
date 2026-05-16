@@ -218,6 +218,85 @@ body {
   font-size: 0.9rem;
 }
 
+/* Bridal Shower */
+.bridal-page {
+  min-height: 100svh;
+  background: #fffaf7;
+}
+
+.shower-hero {
+  min-height: 82svh;
+  padding: 6rem 1rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  background:
+    linear-gradient(rgba(44, 24, 16, 0.4), rgba(44, 24, 16, 0.48)),
+    url('https://images.unsplash.com/photo-1523438885200-e635ba2c371e?w=1200') center/cover;
+}
+
+.shower-hero-content {
+  width: min(100%, 760px);
+}
+
+.shower-kicker {
+  margin-bottom: 0.8rem;
+  color: #f4d88a;
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.55);
+}
+
+.shower-hero h1 {
+  color: white;
+  font-size: 4rem;
+  line-height: 1.05;
+  font-weight: 300;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.55);
+}
+
+.shower-hero p {
+  font-size: 1.4rem;
+  line-height: 1.35;
+  margin-bottom: 0.4rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.55);
+}
+
+.shower-details {
+  max-width: 680px;
+}
+
+.gift-links {
+  width: min(100%, 640px);
+  margin: 2rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.gift-links a {
+  min-height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  color: white;
+  background: var(--primary-color);
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.gift-links a:hover {
+  color: var(--text-color);
+  background: var(--secondary-color);
+}
+
 /* Timeline */
 .timeline {
   display: flex;
@@ -314,6 +393,29 @@ body {
     width: min(100%, 22rem);
   }
 
+  .shower-hero {
+    min-height: 84svh;
+    align-items: flex-end;
+    padding: 6.5rem 1rem 4rem;
+  }
+
+  .shower-hero h1 {
+    font-size: 2.45rem;
+  }
+
+  .shower-hero p {
+    font-size: 1.05rem;
+  }
+
+  .shower-kicker {
+    font-size: 0.9rem;
+  }
+
+  .gift-links {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
   .timeline {
     gap: 1rem;
     padding: 0;
@@ -343,5 +445,9 @@ body {
   .navigation a {
     font-size: 0.9rem;
     padding-inline: 0.55rem;
+  }
+
+  .shower-hero h1 {
+    font-size: 2.1rem;
   }
 }
