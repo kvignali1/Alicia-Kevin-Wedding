@@ -1,0 +1,54 @@
+# Wedding Website & App - Recommended Setup Plan
+
+## Overview
+This project will create a wedding website hosted on GitHub Pages and a linked mobile app for iOS/Android, with features for guest list management, RSVPs, photo gallery, timeline, and donation tracking.
+
+## Tech Stack Recommendations
+
+### Website (GitHub Pages Hosted)
+- **Frontend**: React + TypeScript
+- **Build Tool**: Vite (fast development and building)
+- **Hosting**: GitHub Pages (free, integrated with Git)
+
+### Mobile App
+- **Framework**: React Native with Expo
+- **Platform**: iOS and Android
+- **Development**: Expo CLI for easy development and testing
+
+### Backend & Database
+- **Primary Option**: Firebase (easiest setup)
+  - Authentication (user accounts)
+  - Firestore (database for RSVPs, guest info)
+  - Storage (photos, documents)
+  - Hosting (website deployment)
+- **Alternative**: Node.js + Express + PostgreSQL (more control)
+
+## Key Features to Implement
+- Guest list management
+- RSVP tracking system
+- Photo gallery
+- Wedding timeline
+- Donation tracking (Zelle integration)
+- Contact information storage
+
+## Development Prerequisites
+1. Node.js & npm (v18+)
+2. Git & GitHub account
+3. VS Code with Expo Tools extension
+4. Firebase account (if using Firebase backend)
+
+## Next Steps
+1. Set up project structure
+2. Initialize React app with Vite
+3. Set up Expo React Native project
+4. Configure Firebase backend
+5. Implement core features
+
+## Project Structure
+```
+wedding-project/
+├── website/          # React + Vite website
+├── mobile-app/       # React Native + Expo app
+├── backend/          # Node.js/Express (if not using Firebase)
+└── shared/           # Shared components/utilities
+```

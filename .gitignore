@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+website/node_modules/
+
+# Build output
+dist/
+website/dist/
+
+# Local RSVP data
+backend/data/*
+!backend/data/.gitignore
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db

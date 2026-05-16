@@ -1,0 +1,81 @@
+/* Header Component Styles */
+.hero-section {
+  background: linear-gradient(rgba(0, 0, 0, 0.38), rgba(0,0,0,0.42)),
+              url('https://images.unsplash.com/photo-1519741497674-611481863552?w=1200') center/cover;
+  min-height: 100svh;
+  padding: 6rem 1rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  position: relative;
+}
+
+.hero-content {
+  max-width: 800px;
+  padding: 1rem;
+  z-index: 2;
+}
+
+.hero-title {
+  color: white;
+  font-size: 4rem;
+  line-height: 1.05;
+  font-weight: 300;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.55);
+  font-family: 'Georgia', serif;
+}
+
+.hero-date {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+  color: #D4AF37;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.hero-location {
+  font-size: 1.2rem;
+  line-height: 1.4;
+  opacity: 0.9;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 92svh;
+    align-items: flex-end;
+    padding: 6.5rem 1rem 4rem;
+    background-position: center;
+  }
+
+  .hero-content {
+    width: min(100%, 24rem);
+    padding: 0;
+  }
+
+  .hero-title {
+    font-size: 2.75rem;
+  }
+
+  .hero-date {
+    font-size: 1.45rem;
+  }
+
+  .hero-location {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero-title {
+    font-size: 2.25rem;
+  }
+
+  .hero-date {
+    font-size: 1.25rem;
+  }
+}

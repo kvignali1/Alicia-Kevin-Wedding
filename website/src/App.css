@@ -1,0 +1,379 @@
+/* Wedding Website Styles */
+:root {
+  --primary-color: #8B5A3C;
+  --secondary-color: #D4AF37;
+  --accent-color: #F8F1E9;
+  --text-color: #2C1810;
+  --light-bg: #FFFFFF;
+  --dark-bg: #1a1a1a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Georgia', serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--light-bg);
+}
+
+.App {
+  min-height: 100svh;
+  overflow-x: hidden;
+}
+
+/* Navigation */
+.navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  padding: 0.85rem 0.75rem;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  gap: 0.35rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.navigation a {
+  flex: 0 0 auto;
+  color: var(--text-color);
+  text-decoration: none;
+  padding: 0.45rem 0.65rem;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.navigation a:hover {
+  color: var(--primary-color);
+}
+
+/* Sections */
+.section {
+  padding: 5rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.section h2 {
+  font-size: 2.5rem;
+  line-height: 1.15;
+  margin-bottom: 2rem;
+  color: var(--primary-color);
+  position: relative;
+}
+
+.section h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background: var(--secondary-color);
+}
+
+.section p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  color: #666;
+}
+
+/* RSVP Button */
+.rsvp-button {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  min-height: 48px;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-family: inherit;
+}
+
+.rsvp-small-print {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  max-width: 540px;
+  margin-bottom: 1.5rem;
+}
+
+.rsvp-form {
+  width: min(100%, 640px);
+  margin: 2rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  text-align: left;
+}
+
+.rsvp-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.rsvp-form input,
+.rsvp-form select,
+.rsvp-form textarea {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #d8c9bc;
+  border-radius: 5px;
+  padding: 0.85rem;
+  color: var(--text-color);
+  background: white;
+  font: inherit;
+}
+
+.rsvp-form textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.rsvp-form label:has(textarea),
+.rsvp-form .rsvp-checkbox,
+.rsvp-form .rsvp-button,
+.rsvp-form-message {
+  grid-column: 1 / -1;
+}
+
+.rsvp-form .rsvp-checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.rsvp-form .rsvp-checkbox input {
+  width: 22px;
+  min-height: 22px;
+  accent-color: var(--primary-color);
+}
+
+.rsvp-form input:focus,
+.rsvp-form select:focus,
+.rsvp-form textarea:focus {
+  outline: 2px solid var(--secondary-color);
+  outline-offset: 2px;
+}
+
+.rsvp-form .rsvp-button {
+  justify-self: center;
+  width: min(100%, 22rem);
+}
+
+.rsvp-form-message {
+  max-width: none;
+  margin: 0;
+  text-align: center;
+  font-weight: 600;
+}
+
+.rsvp-form-message.is-success {
+  color: #28703d;
+}
+
+.rsvp-form-message.is-error {
+  color: #a23224;
+}
+
+.rsvp-button:hover {
+  background: var(--secondary-color);
+  color: var(--text-color);
+}
+
+/* Gallery Placeholder */
+.gallery-placeholder {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.placeholder-image {
+  width: min(200px, 100%);
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+/* Timeline */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.timeline-item {
+  background: var(--accent-color);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-color);
+  text-align: left;
+}
+
+.timeline-item h3 {
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.timeline-item p {
+  color: #666;
+  margin: 0;
+}
+
+/* Registry Links */
+.registry-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.registry-link {
+  display: inline-block;
+  background: var(--secondary-color);
+  color: var(--text-color);
+  min-height: 48px;
+  padding: 1rem 2rem;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background 0.3s;
+  font-weight: 500;
+}
+
+.registry-link:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+/* Footer */
+.footer {
+  background: var(--dark-bg);
+  color: white;
+  text-align: center;
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  body {
+    line-height: 1.55;
+  }
+
+  .navigation {
+    justify-content: flex-start;
+    padding: 0.7rem 0.65rem;
+  }
+
+  .navigation a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.95rem;
+  }
+
+  .section {
+    width: 100%;
+    padding: 3.25rem 1.15rem;
+  }
+
+  .section h2 {
+    font-size: 1.95rem;
+    margin-bottom: 1.7rem;
+  }
+
+  .section p {
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .section .rsvp-small-print {
+    font-size: 0.86rem;
+    line-height: 1.45;
+    max-width: 21rem;
+    margin-bottom: 1.35rem;
+  }
+
+  .rsvp-button,
+  .registry-link {
+    width: min(100%, 22rem);
+  }
+
+  .rsvp-form {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+    margin-top: 1.5rem;
+  }
+
+  .gallery-placeholder {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .placeholder-image {
+    width: min(100%, 22rem);
+  }
+
+  .registry-links {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .timeline {
+    gap: 1rem;
+    padding: 0;
+  }
+
+  .timeline-item {
+    padding: 1.2rem;
+    text-align: left;
+    border-left-width: 3px;
+  }
+
+  .timeline-item p {
+    max-width: none;
+    margin-bottom: 0.45rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .section {
+    padding: 2.75rem 1rem;
+  }
+
+  .section h2 {
+    font-size: 1.7rem;
+  }
+
+  .navigation a {
+    font-size: 0.9rem;
+    padding-inline: 0.55rem;
+  }
+}
