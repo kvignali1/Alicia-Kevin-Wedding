@@ -5,7 +5,7 @@ import Navigation from './components/Navigation'
 import Footer from './components/Footer'
 import './App.css'
 
-const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:4000' : ''
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:4000' : '')
 
 const formatPhoneNumber = (value: string) => {
   const digits = value.replace(/\D/g, '').slice(0, 10)
