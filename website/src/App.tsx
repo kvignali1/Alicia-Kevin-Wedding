@@ -6,6 +6,7 @@ import Footer from './components/Footer'
 import './App.css'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:4000' : '')
+const RSVP_SUBMIT_URL = import.meta.env.VITE_RSVP_SUBMIT_URL || ''
 
 const formatPhoneNumber = (value: string) => {
   const digits = value.replace(/\D/g, '').slice(0, 10)
@@ -43,6 +44,25 @@ function App() {
     const payload = Object.fromEntries(formData.entries())
 
     try {
+      if (RSVP_SUBMIT_URL) {
+        const sheetPayload = new URLSearchParams()
+        formData.forEach((value, key) => {
+          sheetPayload.append(key, String(value))
+        })
+
+        await fetch(RSVP_SUBMIT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: sheetPayload,
+        })
+
+        form.reset()
+        setHasSpouseGuest(false)
+        setRsvpStatus('success')
+        setRsvpMessage('Thank you. Your RSVP has been received!')
+        return
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/rsvps`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
