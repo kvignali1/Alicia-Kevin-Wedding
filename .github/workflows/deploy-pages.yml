@@ -41,7 +41,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+          VITE_RSVP_SUBMIT_URL: https://script.google.com/macros/s/AKfycbwh6QTDntNbP7f-JtyitNgzipyFa22z2jurP2pHlg_rmxivsm14gzxirpyrdln1HNIZ/exec
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
