@@ -212,16 +212,6 @@ function App() {
             </div>
           </div>
         </section>
-
-        <section id="registry" className="section">
-          <h2>Gift Registry</h2>
-          <p>Your presence at our wedding is the greatest gift we could ask for. However, if you'd like to help us start our new life together, we've registered at:</p>
-          <div className="registry-links">
-            <a href="#" className="registry-link">Williams Sonoma</a>
-            <a href="#" className="registry-link">Amazon</a>
-            <a href="#" className="registry-link">Crate & Barrel</a>
-          </div>
-        </section>
       </main>
 
       <Footer />

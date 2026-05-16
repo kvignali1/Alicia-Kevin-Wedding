@@ -8,7 +8,6 @@ const Navigation: React.FC = () => {
       <a href="#rsvp">RSVP</a>
       <a href="#gallery">Gallery</a>
       <a href="#timeline">Timeline</a>
-      <a href="#registry">Registry</a>
     </nav>
   )
 }
