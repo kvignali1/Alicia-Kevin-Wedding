@@ -102,6 +102,17 @@ function App() {
           <p>We're excited to share this beautiful day with our closest friends and family as we begin our journey together as husband and wife.</p>
         </section>
 
+        <section id="dress-code" className="section">
+          <h2>Dress Code</h2>
+            <div className="section-divider" />
+              <p><strong>Dressy Casual Attire</strong></p>
+                <p>We want everyone to feel comfortable and enjoy the celebration, so we've chosen a dressy casual dress code for our wedding. This means you can skip the tuxedos and ball gowns, but we still encourage you to dress up a bit to make the day feel special!</p>
+          <h2>Colors</h2>
+            <div className="section-divider" />
+              <p><strong>Colors Not Allowed</strong></p>
+              <p>We kindly request that you do not wear Ivory or White to the wedding. We want Alicia to stand out on her special day as the only one in white! We look forward to any other colors you choose to wear!</p>
+        </section>
+
         <section id="rsvp" className="section">
           <h2>RSVP</h2>
           <p><strong>We kindly ask that you RSVP by September 1st, 2026.</strong></p>
