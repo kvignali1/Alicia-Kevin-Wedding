@@ -110,7 +110,7 @@ function App() {
           <h2>Colors</h2>
             <div className="section-divider" />
               <p><strong>Colors Not Allowed</strong></p>
-              <p>We kindly request that you do not wear Ivory or White to the wedding. We want Alicia to stand out on her special day as the only one in white! We look forward to any other colors you choose to wear!</p>
+              <p>We kindly request that you do not wear Navy Blue, Burgundy, Ivory or White to the wedding. We look forward to any other colors you choose to wear!</p>
         </section>
 
         <section id="rsvp" className="section">
