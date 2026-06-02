@@ -148,8 +148,50 @@ function normalizeName(value) {
   return cleanText(value).replace(/\s+/g, ' ').toLowerCase()
 }
 
-function doGet() {
+function doGet(event) {
+  const params = event && event.parameter ? event.parameter : {}
+
+  if (params.action === 'count') {
+    const payload = getRsvpCountPayload()
+    if (params.callback) {
+      return javascriptResponse(`${params.callback}(${JSON.stringify(payload)});`)
+    }
+
+    return jsonResponse(payload)
+  }
+
   return jsonResponse({ ok: true, message: 'Wedding RSVP endpoint is live.' })
+}
+
+function getRsvpCountPayload() {
+  const baseTakenSpots = 14
+  const totalSpots = 50
+  const sheet = getSheet()
+  const headerMap = getHeaderMap(sheet)
+  const lastRow = sheet.getLastRow()
+
+  if (lastRow < 2) {
+    return {
+      ok: true,
+      baseTakenSpots,
+      attendingRsvps: 0,
+      takenSpots: baseTakenSpots,
+      totalSpots,
+    }
+  }
+
+  const rows = sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).getValues()
+  const attendingRsvps = rows.filter((row) => {
+    return cleanText(row[headerMap.Attending]).toLowerCase() === 'yes'
+  }).length
+
+  return {
+    ok: true,
+    baseTakenSpots,
+    attendingRsvps,
+    takenSpots: baseTakenSpots + attendingRsvps,
+    totalSpots,
+  }
 }
 
 function parseRequest(event) {
@@ -203,4 +245,10 @@ function jsonResponse(payload) {
   return ContentService
     .createTextOutput(JSON.stringify(payload))
     .setMimeType(ContentService.MimeType.JSON)
+}
+
+function javascriptResponse(source) {
+  return ContentService
+    .createTextOutput(source)
+    .setMimeType(ContentService.MimeType.JAVASCRIPT)
 }

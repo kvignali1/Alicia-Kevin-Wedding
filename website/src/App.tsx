@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import Header from './components/Header'
 import Navigation from './components/Navigation'
@@ -12,8 +12,44 @@ const DINNER_ADDRESS = '3715 South Decatur Blvd, Las Vegas, NV'
 const PARTY_BUS_ADDRESS = 'Palms Casino Resort, 4321 West Flamingo Rd, Las Vegas, NV'
 const PARTY_BUS_TICKET_URL = 'https://www.groupon.com/deals/nocturnal-tours-party-bus-1?redemptionLocationId=f7679cf9-58cb-b06a-9053-014b95d1c4a6'
 const PARTY_BUS_REGISTRATION_URL = 'https://goo.gl/23bco6'
-const RSVP_TAKEN_SPOTS = 14
+const RSVP_BASE_TAKEN_SPOTS = 14
 const RSVP_TOTAL_SPOTS = 50
+
+const buildUrl = (baseUrl: string, params: Record<string, string>) => {
+  const url = new URL(baseUrl, window.location.href)
+  Object.entries(params).forEach(([key, value]) => {
+    url.searchParams.set(key, value)
+  })
+  return url.toString()
+}
+
+const fetchJsonp = <T,>(url: string) => {
+  return new Promise<T>((resolve, reject) => {
+    const callbackName = `rsvpCountCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`
+    const script = document.createElement('script')
+
+    window.setTimeout(() => {
+      reject(new Error('Unable to load RSVP count.'))
+      script.remove()
+      delete (window as typeof window & Record<string, unknown>)[callbackName]
+    }, 10000)
+
+    ;(window as typeof window & Record<string, unknown>)[callbackName] = (payload: T) => {
+      resolve(payload)
+      script.remove()
+      delete (window as typeof window & Record<string, unknown>)[callbackName]
+    }
+
+    script.onerror = () => {
+      reject(new Error('Unable to load RSVP count.'))
+      script.remove()
+      delete (window as typeof window & Record<string, unknown>)[callbackName]
+    }
+
+    script.src = buildUrl(url, { action: 'count', callback: callbackName })
+    document.body.appendChild(script)
+  })
+}
 
 const formatPhoneNumber = (value: string) => {
   const digits = value.replace(/\D/g, '').slice(0, 10)
@@ -39,10 +75,35 @@ const formatPhoneNumber = (value: string) => {
 function App() {
   const [rsvpStatus, setRsvpStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [rsvpMessage, setRsvpMessage] = useState('')
+  const [rsvpTakenSpots, setRsvpTakenSpots] = useState(RSVP_BASE_TAKEN_SPOTS)
   const [hasSpouseGuest, setHasSpouseGuest] = useState(false)
   const [weddingAddressCopyStatus, setWeddingAddressCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
   const [dinnerAddressCopyStatus, setDinnerAddressCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
   const [partyBusAddressCopyStatus, setPartyBusAddressCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
+
+  const refreshRsvpCount = async () => {
+    try {
+      if (RSVP_SUBMIT_URL) {
+        const data = await fetchJsonp<{ takenSpots?: number }>(RSVP_SUBMIT_URL)
+        setRsvpTakenSpots(Number(data.takenSpots) || RSVP_BASE_TAKEN_SPOTS)
+        return
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/rsvps/count`)
+      if (!response.ok) {
+        throw new Error('Unable to load RSVP count.')
+      }
+
+      const data = await response.json()
+      setRsvpTakenSpots(Number(data.takenSpots) || RSVP_BASE_TAKEN_SPOTS)
+    } catch {
+      setRsvpTakenSpots(RSVP_BASE_TAKEN_SPOTS)
+    }
+  }
+
+  useEffect(() => {
+    refreshRsvpCount()
+  }, [])
 
   const handleRsvpSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -70,6 +131,7 @@ function App() {
         setHasSpouseGuest(false)
         setRsvpStatus('success')
         setRsvpMessage('Thank you. Your RSVP has been received!')
+        refreshRsvpCount()
         return
       }
 
@@ -89,6 +151,7 @@ function App() {
       setHasSpouseGuest(false)
       setRsvpStatus('success')
       setRsvpMessage('Thank you. Your RSVP has been received!')
+      refreshRsvpCount()
     } catch (error) {
       setRsvpStatus('error')
       setRsvpMessage(error instanceof Error ? error.message : 'Unable to send RSVP right now.')
@@ -169,13 +232,13 @@ function App() {
           <div className="section-eyebrow">Save Your Seat</div>
           <h2>RSVP</h2>
           <p><strong>We kindly ask that you RSVP by September 1st, 2026.</strong></p>
-          <div className="rsvp-capacity" aria-label={`${RSVP_TAKEN_SPOTS} of ${RSVP_TOTAL_SPOTS} spots taken`}>
+          <div className="rsvp-capacity" aria-label={`${rsvpTakenSpots} of ${RSVP_TOTAL_SPOTS} spots taken`}>
             <div className="rsvp-capacity-header">
               <span>Guest Count</span>
-              <strong>{RSVP_TAKEN_SPOTS}/{RSVP_TOTAL_SPOTS}</strong>
+              <strong>{rsvpTakenSpots}/{RSVP_TOTAL_SPOTS}</strong>
             </div>
             <div className="rsvp-capacity-track" aria-hidden="true">
-              <span style={{ width: `${(RSVP_TAKEN_SPOTS / RSVP_TOTAL_SPOTS) * 100}%` }} />
+              <span style={{ width: `${Math.min((rsvpTakenSpots / RSVP_TOTAL_SPOTS) * 100, 100)}%` }} />
             </div>
             <p>This is just a planning indicator. The RSVP form will still submit if responses go over the listed count.</p>
           </div>

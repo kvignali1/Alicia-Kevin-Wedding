@@ -116,6 +116,11 @@ const toCsv = (rsvps) => {
   return [headers, ...rows].map((row) => row.map(escapeCsv).join(',')).join('\n')
 }
 
+const getTakenSpotCount = (rsvps) => {
+  const attendingCount = rsvps.filter((rsvp) => cleanText(rsvp.attending).toLowerCase() === 'yes').length
+  return 14 + attendingCount
+}
+
 const adminHtml = (rsvps, key) => {
   const rows = rsvps.map((rsvp) => `
     <tr>
@@ -194,6 +199,18 @@ const server = createServer(async (req, res) => {
 
     if (req.method === 'GET' && url.pathname === '/health') {
       send(res, 200, { ok: true })
+      return
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/rsvps/count') {
+      const rsvps = await readRsvps()
+      send(res, 200, {
+        ok: true,
+        baseTakenSpots: 14,
+        attendingRsvps: getTakenSpotCount(rsvps) - 14,
+        takenSpots: getTakenSpotCount(rsvps),
+        totalSpots: 50,
+      })
       return
     }
 
