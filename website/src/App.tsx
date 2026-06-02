@@ -105,8 +105,8 @@ function App() {
         <section id="dress-code" className="section">
           <h2>Dress Code</h2>
             <div className="section-divider" />
-              <p><strong>Dressy Casual Attire</strong></p>
-                <p>We want everyone to feel comfortable and enjoy the celebration, so we've chosen a dressy casual dress code for our wedding. This means you can skip the tuxedos and ball gowns, but we still encourage you to dress up a bit to make the day feel special!</p>
+              <p><strong>Formal Attire</strong></p>
+                <p>We want everyone to feel comfortable and enjoy the celebration, so we've chosen a formal dress code for our wedding. This means you can skip the tuxedos and ball gowns, but we still encourage you to dress up a bit to make the day feel special!</p>
           <h2>Colors</h2>
             <div className="section-divider" />
               <p><strong>Colors Not Allowed</strong></p>
