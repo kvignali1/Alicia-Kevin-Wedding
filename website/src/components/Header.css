@@ -1,54 +1,125 @@
 /* Header Component Styles */
 .hero-section {
-  background: linear-gradient(rgba(0, 0, 0, 0.38), rgba(0,0,0,0.42)),
-              url('https://images.unsplash.com/photo-1519741497674-611481863552?w=1200') center/cover;
-  min-height: 100svh;
-  padding: 6rem 1rem 3rem;
+  background:
+              linear-gradient(180deg, rgba(31, 23, 20, 0.22), rgba(31, 23, 20, 0.64)),
+              linear-gradient(90deg, rgba(122, 138, 115, 0.22), transparent 32%, transparent 68%, rgba(184, 120, 120, 0.2));
+  min-height: 88svh;
+  padding: 7rem 1rem 4rem;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   color: white;
   position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.hero-section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: url('https://images.unsplash.com/photo-1519741497674-611481863552?w=1200') center/cover;
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: none;
+}
+
+.hero-section-fade-image::after {
+  animation: heroImageFadeIn 1.8s ease-out both;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-section::before {
+  top: 7.5rem;
+  width: min(100%, 680px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 253, 249, 0.7), transparent);
+  transform: translateX(-50%);
+}
+
+@keyframes heroImageFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .hero-content {
   max-width: 800px;
   padding: 1rem;
   z-index: 2;
+  position: relative;
+}
+
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+  color: #f1d88c;
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.55);
+}
+
+.hero-kicker::before,
+.hero-kicker::after {
+  content: '';
+  width: 36px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, currentColor);
+}
+
+.hero-kicker::after {
+  background: linear-gradient(90deg, currentColor, transparent);
 }
 
 .hero-title {
   color: white;
-  font-size: 4rem;
+  font-size: 3.85rem;
   line-height: 1.05;
   font-weight: 300;
   margin-bottom: 1rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.55);
+  text-shadow: 0 8px 32px rgba(0, 0, 0, 0.62);
   font-family: 'Georgia', serif;
 }
 
 .hero-date {
-  font-size: 2rem;
+  font-size: 1.75rem;
   line-height: 1.2;
   margin-bottom: 0.5rem;
   color: #D4AF37;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  text-shadow: 0 5px 18px rgba(0,0,0,0.58);
 }
 
 .hero-location {
   font-size: 1.2rem;
   line-height: 1.4;
   opacity: 0.9;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 5px 18px rgba(0, 0, 0, 0.55);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .hero-section {
-    min-height: 92svh;
+    min-height: 82svh;
     align-items: flex-end;
-    padding: 6.5rem 1rem 4rem;
+    padding: 8.5rem 1rem 3.5rem;
     background-position: center;
   }
 
@@ -57,12 +128,23 @@
     padding: 0;
   }
 
+  .hero-kicker {
+    font-size: 0.72rem;
+    letter-spacing: 0.11em;
+    gap: 0.5rem;
+  }
+
+  .hero-kicker::before,
+  .hero-kicker::after {
+    width: 22px;
+  }
+
   .hero-title {
-    font-size: 2.75rem;
+    font-size: 2.5rem;
   }
 
   .hero-date {
-    font-size: 1.45rem;
+    font-size: 1.35rem;
   }
 
   .hero-location {
@@ -72,7 +154,7 @@
 
 @media (max-width: 420px) {
   .hero-title {
-    font-size: 2.25rem;
+    font-size: 2.05rem;
   }
 
   .hero-date {

@@ -91,29 +91,39 @@ function App() {
       <Header />
 
       <main>
-        <section id="about" className="section">
-          <h2>Our Story</h2>
-          <p>Our story started three years ago at Amazon SBD1 after Kevin finally worked up the courage to ask Alicia for her number with a little encouragement from a friend.</p>
-          <p>What started as uncertainty quickly turned into something neither of us expected. From the beginning, there was chemistry on every level. Somewhere between go-kart dates, spontaneous lunch plans, scenic drives through Arrowhead, and late nights laughing together, we realized we had found not only a partner, but also our best friend.</p>
-          <p>We're both old souls who love old music, good food, long drives, and nights spent doing absolutely nothing except talking for hours. Food became our love language. Kevin brings the corny jokes, while Alicia keeps him grounded with her sarcastic humor and habit of jokingly talking trash to the cat when she lays on Kevin.</p>
-          <p>Over the years, we've continued building a life together by always making room for each other. From sharing a small apartment, adopting our kitten, and creating a home together, to finally moving into a bigger space where everyone has room to grow, every chapter has brought us closer.</p>
-          <p>On December 11th, 2025, Kevin proposed to Alicia at the top of Griffith Observatory on a sunny afternoon between the observatory domes. Now we're excited for our next chapter together: building a home, growing our family, creating space for Alicia's future animal rescue, and making sure there's a garage big enough for Kevin's future drift car projects.</p>
-          <p>At the center of it all has always been the same thing: love, friendship, laughter, and choosing each other every single day.</p>
-          <p>We're excited to share this beautiful day with our closest friends and family as we begin our journey together as husband and wife.</p>
+        <section id="about" className="section story-section">
+          <div className="section-eyebrow">Our Story</div>
+          <h2>Three years, one very easy yes.</h2>
+          <div className="story-copy">
+            <p>Our story started three years ago at Amazon SBD1 after Kevin finally worked up the courage to ask Alicia for her number with a little encouragement from a friend.</p>
+            <p>What started as uncertainty quickly turned into something neither of us expected. From the beginning, there was chemistry on every level. Somewhere between go-kart dates, spontaneous lunch plans, scenic drives through Arrowhead, and late nights laughing together, we realized we had found not only a partner, but also our best friend.</p>
+            <p>We're both old souls who love old music, good food, long drives, and nights spent doing absolutely nothing except talking for hours. Food became our love language. Kevin brings the corny jokes, while Alicia keeps him grounded with her sarcastic humor and habit of jokingly talking trash to the cat when she lays on Kevin.</p>
+            <p>Over the years, we've continued building a life together by always making room for each other. From sharing a small apartment, adopting our kitten, and creating a home together, to finally moving into a bigger space where everyone has room to grow, every chapter has brought us closer.</p>
+            <p>On December 11th, 2025, Kevin proposed to Alicia at the top of Griffith Observatory on a sunny afternoon between the observatory domes. Now we're excited for our next chapter together: building a home, growing our family, creating space for Alicia's future animal rescue, and making sure there's a garage big enough for Kevin's future drift car projects.</p>
+            <p>At the center of it all has always been the same thing: love, friendship, laughter, and choosing each other every single day.</p>
+            <p>We're excited to share this beautiful day with our closest friends and family as we begin our journey together as husband and wife.</p>
+          </div>
         </section>
 
         <section id="dress-code" className="section">
+          <div className="section-eyebrow">The Look</div>
           <h2>Dress Code</h2>
-            <div className="section-divider" />
-              <p><strong>Formal Attire</strong></p>
-                <p>We want everyone to feel comfortable and enjoy the celebration, so we've chosen a formal dress code for our wedding. This means you can skip the tuxedos and ball gowns, but we still encourage you to dress up a bit to make the day feel special!</p>
-          <h2>Colors</h2>
-            <div className="section-divider" />
-              <p><strong>Colors Not Allowed</strong></p>
+          <div className="detail-grid">
+            <div className="detail-card">
+              <p className="detail-label">Attire</p>
+              <h3>Dressy Casual Attire</h3>
+              <p>We want everyone to feel comfortable and enjoy the celebration, so we've chosen a dressy yet casual dress code for our wedding. This means skip the tuxedos and ball gowns, but we still encourage you to dress up a bit to make the day feel special!</p>
+            </div>
+            <div className="detail-card detail-card-dark">
+              <p className="detail-label">Colors Not Allowed</p>
+              <h3>Reserved Colors</h3>
               <p>We kindly request that you do not wear Navy Blue, Burgundy, Ivory or White to the wedding. We look forward to any other colors you choose to wear!</p>
+            </div>
+          </div>
         </section>
 
-        <section id="rsvp" className="section">
+        <section id="rsvp" className="section rsvp-section">
+          <div className="section-eyebrow">Save Your Seat</div>
           <h2>RSVP</h2>
           <p><strong>We kindly ask that you RSVP by September 1st, 2026.</strong></p>
           <p className="rsvp-small-print"><em>Just a quick heads up, due to venue capacity and seating limits, our wedding is strictly by invitation only. Invitations are intended only for the people specifically named, with the exception of married spouses.</em></p>
@@ -187,17 +197,19 @@ function App() {
           </form>
         </section>
 
-        <section id="gallery" className="section">
+        <section id="gallery" className="section gallery-section">
+          <div className="section-eyebrow">Moments</div>
           <h2>Photo Gallery</h2>
           <p>Coming soon - our engagement photos and wedding memories. Check back closer to the wedding date!</p>
           <div className="gallery-placeholder">
-            <div className="placeholder-image"></div>
-            <div className="placeholder-image"></div>
-            <div className="placeholder-image"></div>
+            <div className="placeholder-image gallery-image-one"></div>
+            <div className="placeholder-image gallery-image-two"></div>
+            <div className="placeholder-image gallery-image-three"></div>
           </div>
         </section>
 
-        <section id="timeline" className="section">
+        <section id="timeline" className="section timeline-section">
+          <div className="section-eyebrow">Wedding Day</div>
           <h2>Wedding Timeline</h2>
           <div className="timeline">
             <div className="timeline-item">

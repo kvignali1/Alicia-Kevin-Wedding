@@ -1,10 +1,12 @@
 /* Footer Component Styles */
 .footer {
-  background: #1a1a1a;
+  background:
+    linear-gradient(135deg, #1f1714, #2f2019);
   color: white;
   text-align: center;
-  padding: 2rem 0 calc(2rem + env(safe-area-inset-bottom));
+  padding: 2.4rem 0 calc(2.4rem + env(safe-area-inset-bottom));
   margin-top: 2rem;
+  border-top: 1px solid rgba(198, 163, 67, 0.24);
 }
 
 .footer-content {
@@ -14,7 +16,8 @@
 }
 
 .footer p {
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
+  color: rgba(255, 253, 249, 0.86);
   font-family: 'Georgia', serif;
 }
 
@@ -25,18 +28,18 @@
 }
 
 .footer-links a {
-  color: #D4AF37;
+  color: #e0c264;
   text-decoration: none;
   font-size: 0.9rem;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, transform 0.3s ease;
 }
 
 .footer-links a:hover {
   color: #F8F1E9;
-  text-decoration: underline;
+  transform: translateY(-1px);
 }
 
 /* Responsive Design */
