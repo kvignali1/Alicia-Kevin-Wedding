@@ -6,6 +6,7 @@ const HEADERS = [
   'Email',
   'Phone',
   'Attending',
+  'Joining Party Bus',
   'RSVP Type',
   'Linked To',
   'Message',
@@ -16,11 +17,12 @@ function doPost(event) {
   const fullName = cleanText(data.fullName)
   const email = cleanText(data.email)
   const attending = cleanText(data.attending)
+  const joiningPartyBus = cleanText(data.joiningPartyBus)
   const hasSpouseGuest = data.hasSpouseGuest === 'on' || data.hasSpouseGuest === true || data.hasSpouseGuest === 'true'
   const spouseName = cleanText(data.spouseName)
 
-  if (!fullName || !email || !attending) {
-    return jsonResponse({ ok: false, error: 'Name, email, and attendance are required.' })
+  if (!fullName || !email || !attending || !joiningPartyBus) {
+    return jsonResponse({ ok: false, error: 'Name, email, attendance, and party bus response are required.' })
   }
 
   if (hasSpouseGuest && !spouseName) {
@@ -29,32 +31,121 @@ function doPost(event) {
 
   const sheet = getSheet()
   const submittedAt = new Date()
-
-  sheet.appendRow([
+  const headerMap = getHeaderMap(sheet)
+  const primaryRow = findPrimaryRsvpRow(sheet, headerMap, fullName, email)
+  const primaryValues = makeRowValues({
     submittedAt,
     fullName,
     email,
-    cleanText(data.phone),
+    phone: cleanText(data.phone),
     attending,
-    'Primary',
-    '',
-    cleanText(data.message),
-  ])
+    joiningPartyBus,
+    rsvpType: 'Primary',
+    linkedTo: '',
+    message: cleanText(data.message),
+  })
 
-  if (hasSpouseGuest) {
-    sheet.appendRow([
-      submittedAt,
-      spouseName,
-      '',
-      '',
-      attending,
-      'Spouse Guest',
-      fullName,
-      `Spouse guest of ${fullName}`,
-    ])
+  if (primaryRow) {
+    sheet.getRange(primaryRow, 1, 1, HEADERS.length).setValues([primaryValues])
+  } else {
+    sheet.appendRow(primaryValues)
   }
 
-  return jsonResponse({ ok: true })
+  deleteLinkedSpouseRows(sheet, headerMap, fullName)
+
+  if (hasSpouseGuest) {
+    sheet.appendRow(makeRowValues({
+      submittedAt,
+      fullName: spouseName,
+      email: '',
+      phone: '',
+      attending,
+      joiningPartyBus,
+      rsvpType: 'Spouse Guest',
+      linkedTo: fullName,
+      message: `Spouse guest of ${fullName}`,
+    }))
+  }
+
+  return jsonResponse({ ok: true, mode: primaryRow ? 'updated' : 'created' })
+}
+
+function makeRowValues(row) {
+  return [
+    row.submittedAt,
+    row.fullName,
+    row.email,
+    row.phone,
+    row.attending,
+    row.joiningPartyBus,
+    row.rsvpType,
+    row.linkedTo,
+    row.message,
+  ]
+}
+
+function findPrimaryRsvpRow(sheet, headerMap, fullName, email) {
+  const lastRow = sheet.getLastRow()
+  if (lastRow < 2) {
+    return 0
+  }
+
+  const rows = sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).getValues()
+  const targetEmail = normalizeEmail(email)
+  const targetName = normalizeName(fullName)
+
+  for (let index = 0; index < rows.length; index += 1) {
+    const row = rows[index]
+    const rowType = cleanText(row[headerMap['RSVP Type']]).toLowerCase()
+    const rowEmail = normalizeEmail(row[headerMap.Email])
+    const rowName = normalizeName(row[headerMap['Full Name']])
+
+    if (rowType === 'primary' && rowEmail && rowEmail === targetEmail) {
+      return index + 2
+    }
+
+    if (rowType === 'primary' && !rowEmail && rowName === targetName) {
+      return index + 2
+    }
+  }
+
+  return 0
+}
+
+function deleteLinkedSpouseRows(sheet, headerMap, fullName) {
+  const lastRow = sheet.getLastRow()
+  if (lastRow < 2) {
+    return
+  }
+
+  const rows = sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).getValues()
+  const targetName = normalizeName(fullName)
+
+  for (let index = rows.length - 1; index >= 0; index -= 1) {
+    const row = rows[index]
+    const rowType = cleanText(row[headerMap['RSVP Type']]).toLowerCase()
+    const linkedTo = normalizeName(row[headerMap['Linked To']])
+
+    if (rowType === 'spouse guest' && linkedTo === targetName) {
+      sheet.deleteRow(index + 2)
+    }
+  }
+}
+
+function getHeaderMap(sheet) {
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]
+  return headers.reduce((map, header, index) => {
+    map[cleanText(header)] = index
+    return map
+  }, {})
+}
+
+function normalizeEmail(value) {
+  return cleanText(value).toLowerCase()
+}
+
+function normalizeName(value) {
+  return cleanText(value).replace(/\s+/g, ' ').toLowerCase()
 }
 
 function doGet() {
@@ -84,9 +175,24 @@ function getSheet() {
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(HEADERS)
     sheet.setFrozenRows(1)
+  } else {
+    ensureHeaders(sheet)
   }
 
   return sheet
+}
+
+function ensureHeaders(sheet) {
+  for (let index = 0; index < HEADERS.length; index += 1) {
+    const desiredHeader = HEADERS[index]
+    const currentHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(cleanText)
+    const currentIndex = currentHeaders.indexOf(desiredHeader)
+
+    if (currentIndex === -1) {
+      sheet.insertColumnBefore(index + 1)
+      sheet.getRange(1, index + 1).setValue(desiredHeader)
+    }
+  }
 }
 
 function cleanText(value) {

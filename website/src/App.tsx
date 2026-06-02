@@ -7,6 +7,13 @@ import './App.css'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:4000' : '')
 const RSVP_SUBMIT_URL = import.meta.env.VITE_RSVP_SUBMIT_URL || ''
+const WEDDING_ADDRESS = '555 Third Street, Las Vegas, NV, 89101'
+const DINNER_ADDRESS = '3715 South Decatur Blvd, Las Vegas, NV'
+const PARTY_BUS_ADDRESS = 'Palms Casino Resort, 4321 West Flamingo Rd, Las Vegas, NV'
+const PARTY_BUS_TICKET_URL = 'https://www.groupon.com/deals/nocturnal-tours-party-bus-1?redemptionLocationId=f7679cf9-58cb-b06a-9053-014b95d1c4a6'
+const PARTY_BUS_REGISTRATION_URL = 'https://goo.gl/23bco6'
+const RSVP_TAKEN_SPOTS = 14
+const RSVP_TOTAL_SPOTS = 50
 
 const formatPhoneNumber = (value: string) => {
   const digits = value.replace(/\D/g, '').slice(0, 10)
@@ -33,6 +40,9 @@ function App() {
   const [rsvpStatus, setRsvpStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [rsvpMessage, setRsvpMessage] = useState('')
   const [hasSpouseGuest, setHasSpouseGuest] = useState(false)
+  const [weddingAddressCopyStatus, setWeddingAddressCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
+  const [dinnerAddressCopyStatus, setDinnerAddressCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
+  const [partyBusAddressCopyStatus, setPartyBusAddressCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
 
   const handleRsvpSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -85,6 +95,39 @@ function App() {
     }
   }
 
+  const handleDinnerAddressCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(DINNER_ADDRESS)
+      setDinnerAddressCopyStatus('copied')
+    } catch {
+      setDinnerAddressCopyStatus('error')
+    }
+
+    window.setTimeout(() => setDinnerAddressCopyStatus('idle'), 2200)
+  }
+
+  const handleWeddingAddressCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(WEDDING_ADDRESS)
+      setWeddingAddressCopyStatus('copied')
+    } catch {
+      setWeddingAddressCopyStatus('error')
+    }
+
+    window.setTimeout(() => setWeddingAddressCopyStatus('idle'), 2200)
+  }
+
+  const handlePartyBusAddressCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(PARTY_BUS_ADDRESS)
+      setPartyBusAddressCopyStatus('copied')
+    } catch {
+      setPartyBusAddressCopyStatus('error')
+    }
+
+    window.setTimeout(() => setPartyBusAddressCopyStatus('idle'), 2200)
+  }
+
   return (
     <div className="App">
       <Navigation />
@@ -126,9 +169,20 @@ function App() {
           <div className="section-eyebrow">Save Your Seat</div>
           <h2>RSVP</h2>
           <p><strong>We kindly ask that you RSVP by September 1st, 2026.</strong></p>
+          <div className="rsvp-capacity" aria-label={`${RSVP_TAKEN_SPOTS} of ${RSVP_TOTAL_SPOTS} spots taken`}>
+            <div className="rsvp-capacity-header">
+              <span>Guest Count</span>
+              <strong>{RSVP_TAKEN_SPOTS}/{RSVP_TOTAL_SPOTS}</strong>
+            </div>
+            <div className="rsvp-capacity-track" aria-hidden="true">
+              <span style={{ width: `${(RSVP_TAKEN_SPOTS / RSVP_TOTAL_SPOTS) * 100}%` }} />
+            </div>
+            <p>This is just a planning indicator. The RSVP form will still submit if responses go over the listed count.</p>
+          </div>
           <p className="rsvp-small-print"><em>Just a quick heads up, due to venue capacity and seating limits, our wedding is strictly by invitation only. Invitations are intended only for the people specifically named, with the exception of married spouses.</em></p>
           <p className="rsvp-small-print"><em>Please also note that our wedding will be an adults-only celebration, and we will not be able to accommodate children. We hope you understand and can make arrangements so you can celebrate with us!</em></p>
           <p className="rsvp-small-print"><em>We really appreciate everyone's understanding as we finalize numbers for the big day!</em></p>
+          <p className="rsvp-update-note">Plans change? Maybe you are coming on the party bus after all? Just submit another RSVP!</p>
           <form className="rsvp-form" onSubmit={handleRsvpSubmit}>
             <label>
               Full Name
@@ -163,6 +217,31 @@ function App() {
               </select>
             </label>
 
+            <label>
+              Will you be joining us on the party bus?
+              <select name="joiningPartyBus" required defaultValue="">
+                <option value="" disabled>Select one</option>
+                <option value="Yes">Yes, I plan to join</option>
+                <option value="No">No, I will skip the party bus</option>
+                <option value="Undecided">I'm not sure yet</option>
+              </select>
+            </label>
+
+            <div className="rsvp-party-bus-note">
+              <p>Party bus tickets will need to be purchased individually by each guest who would like to attend.</p>
+              <div className="party-bus-link-steps">
+                <a href={PARTY_BUS_TICKET_URL} target="_blank" rel="noreferrer">
+                  <span>Step 1</span>
+                  Buy the Groupon
+                </a>
+                <a href={PARTY_BUS_REGISTRATION_URL} target="_blank" rel="noreferrer">
+                  <span>Step 2</span>
+                  Register your Groupon
+                  <strong className="party-bus-group-name">Use group name: Kevin &amp; Alicia</strong>
+                </a>
+              </div>
+            </div>
+
             <label className="rsvp-checkbox">
               <input
                 name="hasSpouseGuest"
@@ -170,8 +249,11 @@ function App() {
                 checked={hasSpouseGuest}
                 onChange={(event) => setHasSpouseGuest(event.target.checked)}
               />
-              Do you have a guest coming with you that is a spouse?
+              I am bringing my spouse.
             </label>
+            <p className="rsvp-spouse-note">
+              To help us keep the day intimate and within our venue limits, additional guests are limited to spouses only unless a non-spouse guest has been specifically approved by the wedding party.
+            </p>
 
             {hasSpouseGuest && (
               <label>
@@ -197,6 +279,31 @@ function App() {
           </form>
         </section>
 
+        <section id="contact" className="section contact-section">
+          <div className="section-eyebrow">Questions?</div>
+          <h2>Contact Us</h2>
+          <p>If you need help with RSVP details, timeline timing, or party bus plans, you can reach either of us directly.</p>
+          <div className="contact-grid">
+            <a className="contact-card" href="tel:+19099388638" aria-label="Call Kevin at 909-938-8638">
+              <span>Kevin</span>
+              <strong>909-938-8638</strong>
+            </a>
+            <a className="contact-card" href="tel:+19092464794" aria-label="Call Alicia at 909-246-4794">
+              <span>Alicia</span>
+              <strong>909-246-4794</strong>
+            </a>
+          </div>
+        </section>
+
+        <section id="privacy" className="section privacy-section">
+          <div className="section-eyebrow">Private Invite</div>
+          <h2>Privacy Policy</h2>
+          <div className="privacy-copy">
+            <p>This wedding website is intended only for invited guests. To help us keep our wedding private and invite-only, please do not share this link with anyone who was not personally invited.</p>
+            <p>RSVP details are used only to help us plan attendance, seating, dinner, and wedding-day logistics.</p>
+          </div>
+        </section>
+
         <section id="gallery" className="section gallery-section">
           <div className="section-eyebrow">Moments</div>
           <h2>Photo Gallery</h2>
@@ -217,6 +324,22 @@ function App() {
               <p>3:00 PM - 4:00 PM</p>
               <p><strong>Guests are urged to arrive by 2:30 PM.</strong></p>
               <p><em>Strict on time policy is in effect and any guest arriving late may not be admitted.</em></p>
+              <button
+                className={`timeline-address-copy${weddingAddressCopyStatus === 'copied' ? ' is-copied' : ''}`}
+                type="button"
+                onClick={handleWeddingAddressCopy}
+                aria-label={`Copy wedding address: ${WEDDING_ADDRESS}`}
+              >
+                <span className="timeline-address-label">Wedding Address</span>
+                <span className="timeline-address-text">{WEDDING_ADDRESS}</span>
+                <span className="timeline-address-action" aria-live="polite">
+                  {weddingAddressCopyStatus === 'copied'
+                    ? 'Copied'
+                    : weddingAddressCopyStatus === 'error'
+                      ? 'Copy failed'
+                      : 'Copy address'}
+                </span>
+              </button>
             </div>
             <div className="timeline-item">
               <h3>Private Photo Shoot</h3>
@@ -225,13 +348,45 @@ function App() {
             </div>
             <div className="timeline-item">
               <h3>Dinner</h3>
-              <p>6:00 PM - End</p>
+              <p>6:00 PM - 7:30 PM</p>
               <p>Dinner will be at Bonito Michoacan.</p>
-              <p>Address: (Input address here)</p>
+              <button
+                className={`timeline-address-copy${dinnerAddressCopyStatus === 'copied' ? ' is-copied' : ''}`}
+                type="button"
+                onClick={handleDinnerAddressCopy}
+                aria-label={`Copy dinner address: ${DINNER_ADDRESS}`}
+              >
+                <span className="timeline-address-label">Dinner Address</span>
+                <span className="timeline-address-text">{DINNER_ADDRESS}</span>
+                <span className="timeline-address-action" aria-live="polite">
+                  {dinnerAddressCopyStatus === 'copied'
+                    ? 'Copied'
+                    : dinnerAddressCopyStatus === 'error'
+                      ? 'Copy failed'
+                      : 'Copy address'}
+                </span>
+              </button>
             </div>
             <div className="timeline-item">
-              <h3>Party!</h3>
-              <p>After Dinner End we will be hitting the Vegas Strip!</p>
+              <h3>Noctural Tours Party Bus</h3>
+              <p>8:30 PM - End</p>
+              <p>After dinner, we will meet at Palms Casino Resort for Noctural Tours Party Bus.</p>
+              <button
+                className={`timeline-address-copy${partyBusAddressCopyStatus === 'copied' ? ' is-copied' : ''}`}
+                type="button"
+                onClick={handlePartyBusAddressCopy}
+                aria-label={`Copy party bus address: ${PARTY_BUS_ADDRESS}`}
+              >
+                <span className="timeline-address-label">Party Bus Address</span>
+                <span className="timeline-address-text">{PARTY_BUS_ADDRESS}</span>
+                <span className="timeline-address-action" aria-live="polite">
+                  {partyBusAddressCopyStatus === 'copied'
+                    ? 'Copied'
+                    : partyBusAddressCopyStatus === 'error'
+                      ? 'Copy failed'
+                      : 'Copy address'}
+                </span>
+              </button>
             </div>
           </div>
         </section>

@@ -211,6 +211,72 @@ main {
   color: #70635b;
 }
 
+.rsvp-update-note {
+  width: min(100%, 560px);
+  padding: 0.78rem 1rem;
+  color: var(--primary-color);
+  background: rgba(241, 216, 140, 0.24);
+  border: 1px solid rgba(198, 163, 67, 0.28);
+  border-radius: 8px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.rsvp-capacity {
+  width: min(100%, 560px);
+  margin: 1.2rem auto 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 253, 249, 0.82);
+  border: 1px solid rgba(111, 63, 45, 0.14);
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(39, 27, 22, 0.08);
+  text-align: left;
+}
+
+.rsvp-capacity-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--primary-color);
+}
+
+.rsvp-capacity-header span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rsvp-capacity-header strong {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.rsvp-capacity-track {
+  height: 0.58rem;
+  margin: 0.75rem 0 0.65rem;
+  overflow: hidden;
+  background: rgba(111, 63, 45, 0.12);
+  border-radius: 8px;
+}
+
+.rsvp-capacity-track span {
+  height: 100%;
+  display: block;
+  background: linear-gradient(90deg, var(--sage-color), var(--secondary-color));
+  border-radius: inherit;
+}
+
+.rsvp-capacity p {
+  max-width: none;
+  margin: 0;
+  color: #70635b;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
 .rsvp-form {
   width: min(100%, 680px);
   margin: 2rem auto 0;
@@ -255,6 +321,8 @@ main {
 
 .rsvp-form label:has(textarea),
 .rsvp-form .rsvp-checkbox,
+.rsvp-form .rsvp-party-bus-note,
+.rsvp-form .rsvp-spouse-note,
 .rsvp-form .rsvp-button,
 .rsvp-form-message {
   grid-column: 1 / -1;
@@ -270,6 +338,96 @@ main {
   width: 22px;
   min-height: 22px;
   accent-color: var(--primary-color);
+}
+
+.rsvp-spouse-note {
+  max-width: none;
+  margin: -0.55rem 0 0.2rem;
+  padding: 0.82rem 0.95rem;
+  color: #66574f;
+  background: rgba(247, 238, 229, 0.7);
+  border: 1px solid rgba(111, 63, 45, 0.12);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.rsvp-party-bus-note {
+  max-width: none;
+  margin: -0.2rem 0 0.2rem;
+  padding: 1rem;
+  color: #5f5249;
+  background:
+    linear-gradient(135deg, rgba(122, 138, 115, 0.12), rgba(255, 253, 249, 0.96));
+  border: 1px solid rgba(122, 138, 115, 0.22);
+  border-radius: 8px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.rsvp-party-bus-note p {
+  max-width: none;
+  margin: 0 0 0.85rem;
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.party-bus-link-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.party-bus-link-steps a {
+  min-height: 58px;
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.18rem;
+  color: var(--primary-color);
+  background: rgba(255, 253, 249, 0.82);
+  border: 1px solid rgba(111, 63, 45, 0.14);
+  border-radius: 8px;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    color 0.28s ease,
+    border-color 0.28s ease,
+    box-shadow 0.28s ease,
+    transform 0.28s ease;
+}
+
+.party-bus-link-steps a span {
+  color: var(--sage-color);
+  font-size: 0.68rem;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.party-bus-group-name {
+  width: fit-content;
+  margin-top: 0.28rem;
+  padding: 0.34rem 0.48rem;
+  color: #2f2019;
+  background: #f1d88c;
+  border: 1px solid rgba(111, 63, 45, 0.16);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  line-height: 1.18;
+  font-weight: 800;
+  box-shadow: 0 6px 14px rgba(39, 27, 22, 0.08);
+}
+
+.party-bus-link-steps a:hover,
+.party-bus-link-steps a:focus-visible {
+  color: #3d4d37;
+  border-color: rgba(198, 163, 67, 0.48);
+  box-shadow: 0 10px 22px rgba(39, 27, 22, 0.08);
+  transform: translateY(-2px);
+  outline: none;
 }
 
 .rsvp-form input:focus,
@@ -324,6 +482,92 @@ main {
 
 .rsvp-form-message.is-error {
   color: #a23224;
+}
+
+/* Contact */
+.contact-section {
+  width: min(100%, 960px);
+}
+
+.contact-grid {
+  width: min(100%, 680px);
+  margin: 2rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.contact-card {
+  min-height: 108px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.35rem;
+  color: var(--primary-color);
+  background:
+    linear-gradient(135deg, rgba(255, 253, 249, 0.96), rgba(247, 238, 229, 0.86));
+  border: 1px solid rgba(111, 63, 45, 0.16);
+  border-radius: 8px;
+  box-shadow: var(--shadow-soft);
+  text-decoration: none;
+  transition:
+    border-color 0.34s ease,
+    box-shadow 0.34s ease,
+    transform 0.34s ease;
+}
+
+.contact-card:hover,
+.contact-card:focus-visible {
+  border-color: rgba(198, 163, 67, 0.5);
+  box-shadow: var(--shadow-lift);
+  transform: translateY(-3px);
+  outline: none;
+}
+
+.contact-card span {
+  color: var(--sage-color);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.contact-card strong {
+  color: var(--primary-color);
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+/* Privacy */
+.privacy-section {
+  width: min(100%, 900px);
+}
+
+.privacy-copy {
+  width: min(100%, 680px);
+  margin: 0 auto;
+  padding: 1.35rem;
+  background:
+    linear-gradient(135deg, rgba(255, 253, 249, 0.96), rgba(247, 238, 229, 0.82));
+  border: 1px solid rgba(111, 63, 45, 0.14);
+  border-radius: 8px;
+  box-shadow: var(--shadow-soft);
+}
+
+.privacy-copy p {
+  max-width: none;
+  margin-bottom: 0.9rem;
+  color: #5f5249;
+}
+
+.privacy-copy p:first-child {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.privacy-copy p:last-child {
+  margin-bottom: 0;
 }
 
 /* Gallery */
@@ -448,6 +692,76 @@ main {
 
 .timeline-item p:last-child {
   margin-bottom: 0;
+}
+
+.timeline-address-copy {
+  width: 100%;
+  margin-top: 0.85rem;
+  padding: 0.85rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.35rem 0.8rem;
+  align-items: center;
+  color: var(--text-color);
+  background:
+    linear-gradient(135deg, rgba(255, 253, 249, 0.96), rgba(247, 238, 229, 0.86));
+  border: 1px solid rgba(111, 63, 45, 0.18);
+  border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(39, 27, 22, 0.08);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition:
+    background 0.34s ease,
+    border-color 0.34s ease,
+    box-shadow 0.34s ease,
+    transform 0.34s ease;
+}
+
+.timeline-address-copy:hover,
+.timeline-address-copy:focus-visible {
+  background: #fffdf9;
+  border-color: rgba(198, 163, 67, 0.54);
+  box-shadow: 0 14px 32px rgba(39, 27, 22, 0.12);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.timeline-address-copy.is-copied {
+  border-color: rgba(122, 138, 115, 0.58);
+  background:
+    linear-gradient(135deg, rgba(122, 138, 115, 0.16), rgba(255, 253, 249, 0.96));
+}
+
+.timeline-address-label {
+  grid-column: 1 / -1;
+  color: var(--sage-color);
+  font-size: 0.72rem;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.timeline-address-text {
+  color: var(--primary-color);
+  font-size: 1rem;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.timeline-address-action {
+  padding: 0.44rem 0.62rem;
+  color: #fffdf9;
+  background: linear-gradient(135deg, var(--primary-color), #3d2417);
+  border: 1px solid rgba(198, 163, 67, 0.34);
+  border-radius: 8px;
+  font-size: 0.76rem;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 /* Bridal Shower */
@@ -626,10 +940,27 @@ main {
     margin-bottom: 1.1rem;
   }
 
+  .section .rsvp-update-note {
+    font-size: 0.9rem;
+    max-width: 24rem;
+  }
+
+  .rsvp-capacity {
+    max-width: 24rem;
+  }
+
   .rsvp-form {
     grid-template-columns: 1fr;
     gap: 0.85rem;
     margin-top: 1.4rem;
+  }
+
+  .party-bus-link-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
   }
 
   .timeline {
@@ -653,6 +984,15 @@ main {
   .timeline-item p {
     max-width: none;
     margin-bottom: 0.4rem;
+  }
+
+  .timeline-address-copy {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline-address-action {
+    width: 100%;
+    text-align: center;
   }
 
   .shower-hero {

@@ -15,6 +15,7 @@ const Navigation: React.FC = () => {
       <div className="nav-links" aria-label="Wedding sections">
         <a href="#about">About</a>
         <a href="#rsvp">RSVP</a>
+        <a href="#contact">Contact</a>
         <a href="#gallery">Gallery</a>
         <a href="#timeline">Timeline</a>
       </div>

@@ -61,6 +61,8 @@ const writeRsvps = async (rsvps) => {
 }
 
 const cleanText = (value) => String(value || '').trim()
+const normalizeEmail = (value) => cleanText(value).toLowerCase()
+const normalizeName = (value) => cleanText(value).replace(/\s+/g, ' ').toLowerCase()
 
 const requireAdmin = (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`)
@@ -93,6 +95,7 @@ const toCsv = (rsvps) => {
     'Email',
     'Phone',
     'Attending',
+    'Joining Party Bus',
     'RSVP Type',
     'Linked To',
     'Message',
@@ -104,6 +107,7 @@ const toCsv = (rsvps) => {
     rsvp.email,
     rsvp.phone,
     rsvp.attending,
+    rsvp.joiningPartyBus || '',
     rsvp.rsvpType || 'Primary',
     rsvp.linkedTo || '',
     rsvp.message,
@@ -120,6 +124,7 @@ const adminHtml = (rsvps, key) => {
       <td>${escapeHtml(rsvp.email)}</td>
       <td>${escapeHtml(rsvp.phone)}</td>
       <td>${escapeHtml(rsvp.attending)}</td>
+      <td>${escapeHtml(rsvp.joiningPartyBus || '')}</td>
       <td>${escapeHtml(rsvp.rsvpType || 'Primary')}</td>
       <td>${escapeHtml(rsvp.linkedTo || '')}</td>
       <td>${escapeHtml(rsvp.message)}</td>
@@ -164,13 +169,14 @@ const adminHtml = (rsvps, key) => {
           <th>Email</th>
           <th>Phone</th>
           <th>Attending</th>
+          <th>Party Bus</th>
           <th>RSVP Type</th>
           <th>Linked To</th>
           <th>Message</th>
           <th>Action</th>
         </tr>
       </thead>
-      <tbody>${rows || '<tr><td colspan="9">No RSVPs yet.</td></tr>'}</tbody>
+      <tbody>${rows || '<tr><td colspan="10">No RSVPs yet.</td></tr>'}</tbody>
     </table>
   </main>
 </body>
@@ -196,11 +202,12 @@ const server = createServer(async (req, res) => {
       const fullName = cleanText(body.fullName)
       const email = cleanText(body.email)
       const attending = cleanText(body.attending)
+      const joiningPartyBus = cleanText(body.joiningPartyBus)
       const spouseName = cleanText(body.spouseName)
       const hasSpouseGuest = body.hasSpouseGuest === 'on' || body.hasSpouseGuest === true
 
-      if (!fullName || !email || !attending) {
-        send(res, 400, { error: 'Name, email, and attendance are required.' })
+      if (!fullName || !email || !attending || !joiningPartyBus) {
+        send(res, 400, { error: 'Name, email, attendance, and party bus response are required.' })
         return
       }
 
@@ -210,36 +217,62 @@ const server = createServer(async (req, res) => {
       }
 
       const rsvps = await readRsvps()
+      const submittedAt = new Date().toISOString()
+      const targetEmail = normalizeEmail(email)
+      const targetName = normalizeName(fullName)
+      const existingPrimaryIndex = rsvps.findIndex((rsvp) => {
+        if ((rsvp.rsvpType || 'Primary') !== 'Primary') return false
+
+        const rsvpEmail = normalizeEmail(rsvp.email)
+        if (rsvpEmail && rsvpEmail === targetEmail) return true
+
+        return !rsvpEmail && normalizeName(rsvp.fullName) === targetName
+      })
       const newRsvp = {
-        id: randomUUID(),
-        submittedAt: new Date().toISOString(),
+        id: existingPrimaryIndex >= 0 ? rsvps[existingPrimaryIndex].id : randomUUID(),
+        submittedAt,
         fullName,
         email,
         phone: cleanText(body.phone),
         attending,
+        joiningPartyBus,
         rsvpType: 'Primary',
         linkedTo: '',
         message: cleanText(body.message),
       }
 
-      rsvps.push(newRsvp)
+      if (existingPrimaryIndex >= 0) {
+        rsvps[existingPrimaryIndex] = newRsvp
+      } else {
+        rsvps.push(newRsvp)
+      }
+
+      const spouseLinkedTo = normalizeName(fullName)
+      const rsvpsWithoutOldSpouse = rsvps.filter((rsvp) => {
+        return !((rsvp.rsvpType || 'Primary') === 'Spouse Guest' && normalizeName(rsvp.linkedTo) === spouseLinkedTo)
+      })
 
       if (hasSpouseGuest) {
-        rsvps.push({
+        rsvpsWithoutOldSpouse.push({
           id: randomUUID(),
-          submittedAt: new Date().toISOString(),
+          submittedAt,
           fullName: spouseName,
           email: '',
           phone: '',
           attending,
+          joiningPartyBus,
           rsvpType: 'Spouse Guest',
           linkedTo: fullName,
           message: `Spouse guest of ${fullName}`,
         })
       }
 
-      await writeRsvps(rsvps)
-      send(res, 201, { ok: true, rsvp: newRsvp })
+      await writeRsvps(rsvpsWithoutOldSpouse)
+      send(res, existingPrimaryIndex >= 0 ? 200 : 201, {
+        ok: true,
+        mode: existingPrimaryIndex >= 0 ? 'updated' : 'created',
+        rsvp: newRsvp,
+      })
       return
     }
 
