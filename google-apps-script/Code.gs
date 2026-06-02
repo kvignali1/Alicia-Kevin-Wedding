@@ -1,4 +1,5 @@
 const SHEET_NAME = 'RSVPs'
+const DEFAULT_SHEET_NAME = 'Sheet1'
 
 const HEADERS = [
   'Submitted At',
@@ -211,7 +212,13 @@ function getSheet() {
   let sheet = spreadsheet.getSheetByName(SHEET_NAME)
 
   if (!sheet) {
+    sheet = spreadsheet.getSheetByName(DEFAULT_SHEET_NAME)
+  }
+
+  if (!sheet) {
     sheet = spreadsheet.insertSheet(SHEET_NAME)
+  } else if (sheet.getName() !== SHEET_NAME) {
+    sheet.setName(SHEET_NAME)
   }
 
   if (sheet.getLastRow() === 0) {
