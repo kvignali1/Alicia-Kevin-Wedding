@@ -265,6 +265,7 @@ function App() {
                 autoComplete="tel"
                 inputMode="tel"
                 placeholder="(555) 123-4567"
+                required
                 onChange={(event) => {
                   event.target.value = formatPhoneNumber(event.target.value)
                 }}
@@ -327,7 +328,7 @@ function App() {
 
             <label>
               Message
-              <textarea name="message" rows={3} placeholder="Anything else we should know?" />
+              <textarea name="message" rows={3} placeholder="Anything else we should know?" required />
             </label>
 
             <button className="rsvp-button" type="submit" disabled={rsvpStatus === 'sending'}>
