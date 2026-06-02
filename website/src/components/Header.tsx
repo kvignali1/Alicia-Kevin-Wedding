@@ -1,22 +1,33 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './Header.css'
 
-const HERO_FADE_STORAGE_KEY = 'alicia-kevin-hero-background-seen'
-
 const Header: React.FC = () => {
+  const heroRef = useRef<HTMLElement | null>(null)
   const [shouldFadeHeroImage, setShouldFadeHeroImage] = useState(false)
 
   useEffect(() => {
-    if (window.sessionStorage.getItem(HERO_FADE_STORAGE_KEY)) {
+    const hero = heroRef.current
+    if (!hero) {
       return
     }
 
-    setShouldFadeHeroImage(true)
-    window.sessionStorage.setItem(HERO_FADE_STORAGE_KEY, 'true')
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShouldFadeHeroImage(entry.isIntersecting)
+      },
+      { threshold: 0.35 }
+    )
+
+    observer.observe(hero)
+    return () => observer.disconnect()
   }, [])
 
   return (
-    <header id="top" className={`hero-section${shouldFadeHeroImage ? ' hero-section-fade-image' : ''}`}>
+    <header
+      id="top"
+      ref={heroRef}
+      className={`hero-section${shouldFadeHeroImage ? ' hero-section-fade-image' : ''}`}
+    >
       <div className="hero-content">
         <p className="hero-kicker">Together With Their Families</p>
         <h1 className="hero-title">Alicia & Kevin's Wedding</h1>

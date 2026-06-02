@@ -1,8 +1,6 @@
 /* Header Component Styles */
 .hero-section {
-  background:
-              linear-gradient(180deg, rgba(31, 23, 20, 0.22), rgba(31, 23, 20, 0.64)),
-              linear-gradient(90deg, rgba(122, 138, 115, 0.22), transparent 32%, transparent 68%, rgba(184, 120, 120, 0.2));
+  background: #050303;
   min-height: 88svh;
   padding: 7rem 1rem 4rem;
   display: flex;
@@ -19,8 +17,11 @@
   content: '';
   position: absolute;
   inset: 0;
-  z-index: -1;
-  background: url('https://images.unsplash.com/photo-1519741497674-611481863552?w=1200') center/cover;
+  z-index: 0;
+  background:
+    linear-gradient(180deg, rgba(31, 23, 20, 0.22), rgba(31, 23, 20, 0.64)),
+    linear-gradient(90deg, rgba(122, 138, 115, 0.22), transparent 32%, transparent 68%, rgba(184, 120, 120, 0.2)),
+    url('https://images.unsplash.com/photo-1519741497674-611481863552?w=1200') center/cover;
   opacity: 1;
   transform: scale(1);
   pointer-events: none;
