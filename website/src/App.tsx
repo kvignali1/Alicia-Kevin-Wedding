@@ -244,7 +244,7 @@ function App() {
             </div>
             <p>This is just a planning indicator. The RSVP form will still submit if responses go over the listed count.</p>
           </div>
-          <p className="rsvp-small-print"><em>Just a quick heads up, due to venue capacity and seating limits, our wedding is strictly by invitation only. Invitations are intended only for the people specifically contacted, with the exception of married spouses.</em></p>
+          <p className="rsvp-small-print"><em>Just a quick heads up, due to venue capacity and seating limits, our wedding is strictly by invitation only. Invitations are intended only for the people specifically contacted, with the exception of the invitee's married spouses/partners. All planning has been carefully considered before hand.</em></p>
           <p className="rsvp-small-print"><em>Please also note that our wedding will be an adults-only celebration, and we will not be able to accommodate children. We hope you understand and can make arrangements so you can celebrate with us!</em></p>
           <p className="rsvp-small-print"><em>We really appreciate everyone's understanding as we finalize numbers for the big day!</em></p>
           <p className="rsvp-update-note">Plans change? Maybe you are coming on the party bus after all? Just submit another RSVP!</p>
