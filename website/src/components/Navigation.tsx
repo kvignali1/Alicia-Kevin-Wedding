@@ -18,6 +18,7 @@ const Navigation: React.FC = () => {
         <a href="#contact">Contact</a>
         <a href="#gallery">Gallery</a>
         <a href="#timeline">Timeline</a>
+        <a href="#registry">Registry</a>
       </div>
     </nav>
   )

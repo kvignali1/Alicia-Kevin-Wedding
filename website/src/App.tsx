@@ -12,6 +12,8 @@ const DINNER_ADDRESS = '3715 South Decatur Blvd, Las Vegas, NV'
 const PARTY_BUS_ADDRESS = 'Palms Casino Resort, 4321 West Flamingo Rd, Las Vegas, NV'
 const PARTY_BUS_TICKET_URL = 'https://www.groupon.com/deals/nocturnal-tours-party-bus-1?redemptionLocationId=f7679cf9-58cb-b06a-9053-014b95d1c4a6'
 const PARTY_BUS_REGISTRATION_URL = 'https://goo.gl/23bco6'
+const AMAZON_WISHLIST_URL = 'https://www.amazon.com/hz/wishlist/ls/2J03GPCXJVOI3?ref_=wl_share'
+const HONEYMOON_FUND_URL = 'https://gofund.me/1b20b468e'
 const RSVP_BASE_TAKEN_SPOTS = 14
 const RSVP_TOTAL_SPOTS = 50
 
@@ -242,7 +244,7 @@ function App() {
             </div>
             <p>This is just a planning indicator. The RSVP form will still submit if responses go over the listed count.</p>
           </div>
-          <p className="rsvp-small-print"><em>Just a quick heads up, due to venue capacity and seating limits, our wedding is strictly by invitation only. Invitations are intended only for the people specifically named, with the exception of married spouses.</em></p>
+          <p className="rsvp-small-print"><em>Just a quick heads up, due to venue capacity and seating limits, our wedding is strictly by invitation only. Invitations are intended only for the people specifically contacted, with the exception of married spouses.</em></p>
           <p className="rsvp-small-print"><em>Please also note that our wedding will be an adults-only celebration, and we will not be able to accommodate children. We hope you understand and can make arrangements so you can celebrate with us!</em></p>
           <p className="rsvp-small-print"><em>We really appreciate everyone's understanding as we finalize numbers for the big day!</em></p>
           <p className="rsvp-update-note">Plans change? Maybe you are coming on the party bus after all? Just submit another RSVP!</p>
@@ -452,6 +454,15 @@ function App() {
                 </span>
               </button>
             </div>
+          </div>
+        </section>
+
+        <section id="registry" className="section">
+          <h2>Gift Registry</h2>
+          <p>Your love and presence mean the most. If you would like to contribute a gift, we have included a few options below.</p>
+          <div className="gift-links">
+            <a href={AMAZON_WISHLIST_URL} target="_blank" rel="noreferrer">Amazon Wishlist</a>
+            <a href={HONEYMOON_FUND_URL} target="_blank" rel="noreferrer">Donate to Our Honeymoon</a>
           </div>
         </section>
       </main>
