@@ -1,5 +1,8 @@
 import React from 'react'
 
+const AMAZON_WISHLIST_URL = 'https://www.amazon.com/hz/wishlist/ls/2J03GPCXJVOI3?ref_=wl_share'
+const HONEYMOON_FUND_URL = 'https://gofund.me/1b20b468e'
+
 const BridalShower: React.FC = () => {
   return (
     <div className="bridal-page">
@@ -13,7 +16,7 @@ const BridalShower: React.FC = () => {
         <div className="shower-hero-content">
           <p className="shower-kicker">Bridal Shower</p>
           <h1>Alicia's Bridal Shower</h1>
-          <p>Saturday, May 16, 2026</p>
+          <p>Friday, September 18th, 2026</p>
           <p>Location to be announced</p>
         </div>
       </header>
@@ -30,19 +33,15 @@ const BridalShower: React.FC = () => {
           <div className="timeline shower-details">
             <div className="timeline-item">
               <h3>Date</h3>
-              <p>Saturday, May 16, 2026</p>
+              <p>Friday, September 18th, 2026</p>
             </div>
             <div className="timeline-item">
               <h3>Time</h3>
-              <p>1:00 PM - 4:00 PM</p>
+              <p>6:00 PM</p>
             </div>
             <div className="timeline-item">
               <h3>Location</h3>
               <p>To be announced</p>
-            </div>
-            <div className="timeline-item">
-              <h3>Dress Code</h3>
-              <p>Garden party casual</p>
             </div>
           </div>
         </section>
@@ -51,9 +50,8 @@ const BridalShower: React.FC = () => {
           <h2>Gift Registry</h2>
           <p>Your love and presence mean the most. If you would like to contribute a gift, we have included a few options below.</p>
           <div className="gift-links">
-            <a href="https://www.amazon.com/hz/wishlist/ls" target="_blank" rel="noreferrer">Amazon Wishlist</a>
-            <a href="#" target="_blank" rel="noreferrer">Donate to Our Honeymoon</a>
-            <a href="#" target="_blank" rel="noreferrer">Help Us Build Our Home</a>
+            <a href={AMAZON_WISHLIST_URL} target="_blank" rel="noreferrer">Amazon Wishlist</a>
+            <a href={HONEYMOON_FUND_URL} target="_blank" rel="noreferrer">Donate to Our Honeymoon</a>
           </div>
         </section>
       </main>
