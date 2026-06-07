@@ -108,7 +108,7 @@
   text-shadow: 0 5px 18px rgba(0,0,0,0.58);
 }
 
-.hero-location-copy {
+.hero-location-button {
   width: min(100%, 38rem);
   min-height: 56px;
   margin: 0.55rem auto 0;
@@ -134,18 +134,13 @@
     transform 0.34s ease;
 }
 
-.hero-location-copy:hover,
-.hero-location-copy:focus-visible {
+.hero-location-button:hover,
+.hero-location-button:focus-visible {
   background: rgba(255, 253, 249, 0.14);
   border-color: rgba(224, 194, 100, 0.62);
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
   transform: translateY(-2px);
   outline: none;
-}
-
-.hero-location-copy.is-copied {
-  border-color: rgba(224, 194, 100, 0.82);
-  background: rgba(122, 138, 115, 0.34);
 }
 
 .hero-location-pin {
@@ -225,7 +220,7 @@
     font-size: 1.35rem;
   }
 
-  .hero-location-copy {
+  .hero-location-button {
     flex-wrap: wrap;
     gap: 0.58rem;
     padding: 0.7rem;

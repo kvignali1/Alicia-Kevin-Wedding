@@ -3,10 +3,13 @@ import './Header.css'
 
 const WEDDING_ADDRESS = '555 Third Street, Las Vegas, NV, 89101'
 
-const Header: React.FC = () => {
+type HeaderProps = {
+  onOpenMapOptions: () => void
+}
+
+const Header: React.FC<HeaderProps> = ({ onOpenMapOptions }) => {
   const heroRef = useRef<HTMLElement | null>(null)
   const [shouldFadeHeroImage, setShouldFadeHeroImage] = useState(false)
-  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
 
   useEffect(() => {
     const hero = heroRef.current
@@ -25,17 +28,6 @@ const Header: React.FC = () => {
     return () => observer.disconnect()
   }, [])
 
-  const handleCopyAddress = async () => {
-    try {
-      await navigator.clipboard.writeText(WEDDING_ADDRESS)
-      setCopyStatus('copied')
-    } catch {
-      setCopyStatus('error')
-    }
-
-    window.setTimeout(() => setCopyStatus('idle'), 2200)
-  }
-
   return (
     <header
       id="top"
@@ -47,16 +39,14 @@ const Header: React.FC = () => {
         <h1 className="hero-title">Alicia & Kevin's Wedding</h1>
         <p className="hero-date">October 17th, 2026</p>
         <button
-          className={`hero-location-copy${copyStatus === 'copied' ? ' is-copied' : ''}`}
+          className="hero-location-button"
           type="button"
-          onClick={handleCopyAddress}
-          aria-label={`Copy wedding address: ${WEDDING_ADDRESS}`}
+          onClick={onOpenMapOptions}
+          aria-label={`Open map options for wedding address: ${WEDDING_ADDRESS}`}
         >
           <span className="hero-location-pin" aria-hidden="true" />
           <span className="hero-location-text">{WEDDING_ADDRESS}</span>
-          <span className="hero-location-action" aria-live="polite">
-            {copyStatus === 'copied' ? 'Copied' : copyStatus === 'error' ? 'Copy failed' : 'Copy address'}
-          </span>
+          <span className="hero-location-action">Open maps</span>
         </button>
       </div>
     </header>

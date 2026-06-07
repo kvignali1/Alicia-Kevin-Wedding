@@ -17,6 +17,11 @@ const HONEYMOON_FUND_URL = 'https://gofund.me/1b20b468e'
 const RSVP_BASE_TAKEN_SPOTS = 14
 const RSVP_TOTAL_SPOTS = 50
 
+type MapLocation = {
+  label: string
+  address: string
+}
+
 const buildUrl = (baseUrl: string, params: Record<string, string>) => {
   const url = new URL(baseUrl, window.location.href)
   Object.entries(params).forEach(([key, value]) => {
@@ -79,9 +84,7 @@ function App() {
   const [rsvpMessage, setRsvpMessage] = useState('')
   const [rsvpTakenSpots, setRsvpTakenSpots] = useState(RSVP_BASE_TAKEN_SPOTS)
   const [hasSpouseGuest, setHasSpouseGuest] = useState(false)
-  const [weddingAddressCopyStatus, setWeddingAddressCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
-  const [dinnerAddressCopyStatus, setDinnerAddressCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
-  const [partyBusAddressCopyStatus, setPartyBusAddressCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle')
+  const [selectedMapLocation, setSelectedMapLocation] = useState<MapLocation | null>(null)
 
   const refreshRsvpCount = async () => {
     try {
@@ -160,43 +163,17 @@ function App() {
     }
   }
 
-  const handleDinnerAddressCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(DINNER_ADDRESS)
-      setDinnerAddressCopyStatus('copied')
-    } catch {
-      setDinnerAddressCopyStatus('error')
-    }
-
-    window.setTimeout(() => setDinnerAddressCopyStatus('idle'), 2200)
-  }
-
-  const handleWeddingAddressCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(WEDDING_ADDRESS)
-      setWeddingAddressCopyStatus('copied')
-    } catch {
-      setWeddingAddressCopyStatus('error')
-    }
-
-    window.setTimeout(() => setWeddingAddressCopyStatus('idle'), 2200)
-  }
-
-  const handlePartyBusAddressCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(PARTY_BUS_ADDRESS)
-      setPartyBusAddressCopyStatus('copied')
-    } catch {
-      setPartyBusAddressCopyStatus('error')
-    }
-
-    window.setTimeout(() => setPartyBusAddressCopyStatus('idle'), 2200)
+  const getMapUrl = (address: string, provider: 'google' | 'apple') => {
+    const encodedAddress = encodeURIComponent(address)
+    return provider === 'google'
+      ? `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`
+      : `https://maps.apple.com/?q=${encodedAddress}`
   }
 
   return (
     <div className="App">
       <Navigation />
-      <Header />
+      <Header onOpenMapOptions={() => setSelectedMapLocation({ label: 'Wedding Address', address: WEDDING_ADDRESS })} />
 
       <main>
         <section id="about" className="section story-section">
@@ -391,20 +368,14 @@ function App() {
               <p><strong>Guests are urged to arrive by 2:30 PM.</strong></p>
               <p><em>Strict on time policy is in effect and any guest arriving late may not be admitted.</em></p>
               <button
-                className={`timeline-address-copy${weddingAddressCopyStatus === 'copied' ? ' is-copied' : ''}`}
+                className="timeline-address-button"
                 type="button"
-                onClick={handleWeddingAddressCopy}
-                aria-label={`Copy wedding address: ${WEDDING_ADDRESS}`}
+                onClick={() => setSelectedMapLocation({ label: 'Wedding Address', address: WEDDING_ADDRESS })}
+                aria-label={`Open map options for wedding address: ${WEDDING_ADDRESS}`}
               >
                 <span className="timeline-address-label">Wedding Address</span>
                 <span className="timeline-address-text">{WEDDING_ADDRESS}</span>
-                <span className="timeline-address-action" aria-live="polite">
-                  {weddingAddressCopyStatus === 'copied'
-                    ? 'Copied'
-                    : weddingAddressCopyStatus === 'error'
-                      ? 'Copy failed'
-                      : 'Copy address'}
-                </span>
+                <span className="timeline-address-action">Open maps</span>
               </button>
             </div>
             <div className="timeline-item">
@@ -417,20 +388,14 @@ function App() {
               <p>6:00 PM - 7:30 PM</p>
               <p>Dinner will be at Bonito Michoacan.</p>
               <button
-                className={`timeline-address-copy${dinnerAddressCopyStatus === 'copied' ? ' is-copied' : ''}`}
+                className="timeline-address-button"
                 type="button"
-                onClick={handleDinnerAddressCopy}
-                aria-label={`Copy dinner address: ${DINNER_ADDRESS}`}
+                onClick={() => setSelectedMapLocation({ label: 'Dinner Address', address: DINNER_ADDRESS })}
+                aria-label={`Open map options for dinner address: ${DINNER_ADDRESS}`}
               >
                 <span className="timeline-address-label">Dinner Address</span>
                 <span className="timeline-address-text">{DINNER_ADDRESS}</span>
-                <span className="timeline-address-action" aria-live="polite">
-                  {dinnerAddressCopyStatus === 'copied'
-                    ? 'Copied'
-                    : dinnerAddressCopyStatus === 'error'
-                      ? 'Copy failed'
-                      : 'Copy address'}
-                </span>
+                <span className="timeline-address-action">Open maps</span>
               </button>
             </div>
             <div className="timeline-item">
@@ -438,20 +403,14 @@ function App() {
               <p>8:30 PM - End</p>
               <p>After dinner, we will meet at Palms Casino Resort for Noctural Tours Party Bus.</p>
               <button
-                className={`timeline-address-copy${partyBusAddressCopyStatus === 'copied' ? ' is-copied' : ''}`}
+                className="timeline-address-button"
                 type="button"
-                onClick={handlePartyBusAddressCopy}
-                aria-label={`Copy party bus address: ${PARTY_BUS_ADDRESS}`}
+                onClick={() => setSelectedMapLocation({ label: 'Party Bus Address', address: PARTY_BUS_ADDRESS })}
+                aria-label={`Open map options for party bus address: ${PARTY_BUS_ADDRESS}`}
               >
                 <span className="timeline-address-label">Party Bus Address</span>
                 <span className="timeline-address-text">{PARTY_BUS_ADDRESS}</span>
-                <span className="timeline-address-action" aria-live="polite">
-                  {partyBusAddressCopyStatus === 'copied'
-                    ? 'Copied'
-                    : partyBusAddressCopyStatus === 'error'
-                      ? 'Copy failed'
-                      : 'Copy address'}
-                </span>
+                <span className="timeline-address-action">Open maps</span>
               </button>
             </div>
           </div>
@@ -466,6 +425,42 @@ function App() {
           </div>
         </section>
       </main>
+
+      {selectedMapLocation && (
+        <div
+          className="map-modal-backdrop"
+          role="presentation"
+          onClick={() => setSelectedMapLocation(null)}
+        >
+          <div
+            className="map-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="map-modal-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              className="map-modal-close"
+              type="button"
+              onClick={() => setSelectedMapLocation(null)}
+              aria-label="Close map options"
+            >
+              x
+            </button>
+            <p className="map-modal-kicker">{selectedMapLocation.label}</p>
+            <h2 id="map-modal-title">Open this address in maps?</h2>
+            <p>{selectedMapLocation.address}</p>
+            <div className="map-modal-actions">
+              <a href={getMapUrl(selectedMapLocation.address, 'google')} target="_blank" rel="noreferrer">
+                Open in Google Maps
+              </a>
+              <a href={getMapUrl(selectedMapLocation.address, 'apple')} target="_blank" rel="noreferrer">
+                Open in iMaps for iOS
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
