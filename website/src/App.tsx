@@ -451,10 +451,20 @@ function App() {
             <h2 id="map-modal-title">Open this address in maps?</h2>
             <p>{selectedMapLocation.address}</p>
             <div className="map-modal-actions">
-              <a href={getMapUrl(selectedMapLocation.address, 'google')} target="_blank" rel="noreferrer">
+              <a
+                href={getMapUrl(selectedMapLocation.address, 'google')}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => setSelectedMapLocation(null)}
+              >
                 Open in Google Maps
               </a>
-              <a href={getMapUrl(selectedMapLocation.address, 'apple')} target="_blank" rel="noreferrer">
+              <a
+                href={getMapUrl(selectedMapLocation.address, 'apple')}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => setSelectedMapLocation(null)}
+              >
                 Open in iMaps for iOS
               </a>
             </div>
