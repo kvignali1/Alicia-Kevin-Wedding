@@ -41,7 +41,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_RSVP_SUBMIT_URL: https://script.google.com/macros/s/AKfycbwh6QTDntNbP7f-JtyitNgzipyFa22z2jurP2pHlg_rmxivsm14gzxirpyrdln1HNIZ/exec
+          VITE_RSVP_SUBMIT_URL: https://script.google.com/macros/s/AKfycbzHpEhcS4nWJIcSad6P6UqbwPgbLwy8GhyhjyzvhMWU31x28knSJM-8ktI7EpMcpeMm/exec
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3

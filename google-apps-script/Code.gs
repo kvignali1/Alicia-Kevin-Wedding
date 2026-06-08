@@ -1,5 +1,6 @@
 const SHEET_NAME = 'RSVPs'
 const DEFAULT_SHEET_NAME = 'Sheet1'
+const SPREADSHEET_ID = '1ALh0r85_RGQI1NOB8hrPLdQ1TVvcozUdlmoF1AsG06k'
 
 const HEADERS = [
   'Submitted At',
@@ -207,11 +208,14 @@ function parseRequest(event) {
 }
 
 function getSheet() {
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet()
+  const spreadsheet = SPREADSHEET_ID
+    ? SpreadsheetApp.openById(SPREADSHEET_ID)
+    : SpreadsheetApp.getActiveSpreadsheet()
   const preferredSheet = spreadsheet.getSheetByName(SHEET_NAME)
   const defaultSheet = spreadsheet.getSheetByName(DEFAULT_SHEET_NAME)
   const activeSheet = spreadsheet.getActiveSheet()
-  const candidates = [preferredSheet, defaultSheet, activeSheet].filter(Boolean)
+  const firstSheet = spreadsheet.getSheets()[0]
+  const candidates = [preferredSheet, defaultSheet, activeSheet, firstSheet].filter(Boolean)
   let sheet = candidates.find((candidate) => candidate.getLastRow() > 1)
 
   if (!sheet) {
