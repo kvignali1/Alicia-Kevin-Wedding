@@ -165,7 +165,6 @@ function doGet(event) {
 }
 
 function getRsvpCountPayload() {
-  const baseTakenSpots = 14
   const totalSpots = 50
   const sheet = getSheet()
   const headerMap = getHeaderMap(sheet)
@@ -174,9 +173,9 @@ function getRsvpCountPayload() {
   if (lastRow < 2) {
     return {
       ok: true,
-      baseTakenSpots,
+      baseTakenSpots: 0,
       attendingRsvps: 0,
-      takenSpots: baseTakenSpots,
+      takenSpots: 0,
       totalSpots,
     }
   }
@@ -188,9 +187,9 @@ function getRsvpCountPayload() {
 
   return {
     ok: true,
-    baseTakenSpots,
+    baseTakenSpots: 0,
     attendingRsvps,
-    takenSpots: baseTakenSpots + attendingRsvps,
+    takenSpots: attendingRsvps,
     totalSpots,
   }
 }

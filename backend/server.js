@@ -117,8 +117,7 @@ const toCsv = (rsvps) => {
 }
 
 const getTakenSpotCount = (rsvps) => {
-  const attendingCount = rsvps.filter((rsvp) => cleanText(rsvp.attending).toLowerCase() === 'yes').length
-  return 14 + attendingCount
+  return rsvps.filter((rsvp) => cleanText(rsvp.attending).toLowerCase() === 'yes').length
 }
 
 const adminHtml = (rsvps, key) => {
@@ -204,11 +203,12 @@ const server = createServer(async (req, res) => {
 
     if (req.method === 'GET' && url.pathname === '/api/rsvps/count') {
       const rsvps = await readRsvps()
+      const takenSpots = getTakenSpotCount(rsvps)
       send(res, 200, {
         ok: true,
-        baseTakenSpots: 14,
-        attendingRsvps: getTakenSpotCount(rsvps) - 14,
-        takenSpots: getTakenSpotCount(rsvps),
+        baseTakenSpots: 0,
+        attendingRsvps: takenSpots,
+        takenSpots,
         totalSpots: 50,
       })
       return
