@@ -208,15 +208,19 @@ function parseRequest(event) {
 
 function getSheet() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet()
-  let sheet = spreadsheet.getSheetByName(SHEET_NAME)
+  const preferredSheet = spreadsheet.getSheetByName(SHEET_NAME)
+  const defaultSheet = spreadsheet.getSheetByName(DEFAULT_SHEET_NAME)
+  const activeSheet = spreadsheet.getActiveSheet()
+  const candidates = [preferredSheet, defaultSheet, activeSheet].filter(Boolean)
+  let sheet = candidates.find((candidate) => candidate.getLastRow() > 1)
 
   if (!sheet) {
-    sheet = spreadsheet.getSheetByName(DEFAULT_SHEET_NAME)
+    sheet = preferredSheet || defaultSheet || activeSheet
   }
 
   if (!sheet) {
     sheet = spreadsheet.insertSheet(SHEET_NAME)
-  } else if (sheet.getName() !== SHEET_NAME) {
+  } else if (sheet.getName() !== SHEET_NAME && !preferredSheet) {
     sheet.setName(SHEET_NAME)
   }
 
