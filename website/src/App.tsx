@@ -14,7 +14,7 @@ const PARTY_BUS_TICKET_URL = 'https://www.groupon.com/deals/nocturnal-tours-part
 const PARTY_BUS_REGISTRATION_URL = 'https://goo.gl/23bco6'
 const AMAZON_WISHLIST_URL = 'https://www.amazon.com/hz/wishlist/ls/2J03GPCXJVOI3?ref_=wl_share'
 const HONEYMOON_FUND_URL = 'https://gofund.me/1b20b468e'
-const RSVP_BASE_TAKEN_SPOTS = 14
+const RSVP_BASE_TAKEN_SPOTS = 0
 const RSVP_TOTAL_SPOTS = 50
 
 type MapLocation = {
@@ -202,7 +202,7 @@ function App() {
             <div className="detail-card detail-card-dark">
               <p className="detail-label">Colors Not Allowed</p>
               <h3>Reserved Colors</h3>
-              <p>We kindly request that you do not wear Navy Blue, Burgundy, Ivory or White to the wedding. We look forward to any other colors you choose to wear!</p>
+              <p>We kindly request that you do not wear solid Navy Blue, Burgundy, Ivory or White clothing/dresses to the wedding. We look forward to any other colors you choose to wear!</p>
             </div>
           </div>
         </section>
