@@ -356,6 +356,15 @@ function App() {
           </div>
         </section>
 
+        <section id="privacy" className="section privacy-section">
+          <div className="section-eyebrow">Private Invite</div>
+          <h2>Please keep this link private.</h2>
+          <div className="privacy-copy">
+            <p>This wedding website is intended only for the guest who personally received it. Please do not forward, post, or share this link with anyone else.</p>
+            <p>Because of venue capacity and careful planning, our wedding is private and invite-only. RSVP details are used only to help us plan attendance, seating, dinner, and wedding-day logistics.</p>
+          </div>
+        </section>
+
         <section id="about" className="section story-section">
           <div className="section-eyebrow">Our Story</div>
           <h2>Three years, one very easy yes.</h2>
@@ -466,8 +475,8 @@ function App() {
             </div>
 
             <label>
-              Message
-              <textarea name="message" rows={3} placeholder="Anything else we should know?" required />
+              Message to the Couple
+              <textarea name="message" rows={3} placeholder="Leave us a note here. Please do not use this field to add additional guests." required />
             </label>
 
             <button className="rsvp-button" type="submit" disabled={rsvpStatus === 'sending'}>
@@ -535,15 +544,6 @@ function App() {
               <span>Alicia</span>
               <strong>909-246-4794</strong>
             </a>
-          </div>
-        </section>
-
-        <section id="privacy" className="section privacy-section">
-          <div className="section-eyebrow">Private Invite</div>
-          <h2>Privacy Policy</h2>
-          <div className="privacy-copy">
-            <p>This wedding website is intended only for invited guests. To help us keep our wedding private and invite-only, please do not share this link with anyone who was not personally invited.</p>
-            <p>RSVP details are used only to help us plan attendance, seating, dinner, and wedding-day logistics.</p>
           </div>
         </section>
 
