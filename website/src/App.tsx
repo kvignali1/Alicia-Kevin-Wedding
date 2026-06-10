@@ -16,10 +16,32 @@ const AMAZON_WISHLIST_URL = 'https://www.amazon.com/hz/wishlist/ls/2J03GPCXJVOI3
 const HONEYMOON_FUND_URL = 'https://gofund.me/1b20b468e'
 const RSVP_BASE_TAKEN_SPOTS = 0
 const RSVP_TOTAL_SPOTS = 50
+const WEDDING_DATE = new Date('2026-10-17T15:00:00-07:00').getTime()
+const MAX_GUEST_PHOTO_SIZE = 6 * 1024 * 1024
 
 type MapLocation = {
   label: string
   address: string
+}
+
+type CountdownTime = {
+  days: number
+  hours: number
+  minutes: number
+  seconds: number
+}
+
+type GuestComment = {
+  name: string
+  message: string
+  submittedAt?: string
+}
+
+type GuestPhoto = {
+  name: string
+  caption: string
+  imageUrl: string
+  submittedAt?: string
 }
 
 const buildUrl = (baseUrl: string, params: Record<string, string>) => {
@@ -30,7 +52,7 @@ const buildUrl = (baseUrl: string, params: Record<string, string>) => {
   return url.toString()
 }
 
-const fetchJsonp = <T,>(url: string) => {
+const fetchJsonp = <T,>(url: string, params: Record<string, string> = { action: 'count' }) => {
   return new Promise<T>((resolve, reject) => {
     const callbackName = `rsvpCountCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`
     const script = document.createElement('script')
@@ -53,7 +75,7 @@ const fetchJsonp = <T,>(url: string) => {
       delete (window as typeof window & Record<string, unknown>)[callbackName]
     }
 
-    script.src = buildUrl(url, { action: 'count', callback: callbackName })
+    script.src = buildUrl(url, { ...params, callback: callbackName })
     document.body.appendChild(script)
   })
 }
@@ -83,8 +105,24 @@ function App() {
   const [rsvpStatus, setRsvpStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [rsvpMessage, setRsvpMessage] = useState('')
   const [rsvpTakenSpots, setRsvpTakenSpots] = useState(RSVP_BASE_TAKEN_SPOTS)
-  const [hasSpouseGuest, setHasSpouseGuest] = useState(false)
   const [selectedMapLocation, setSelectedMapLocation] = useState<MapLocation | null>(null)
+  const [countdownTime, setCountdownTime] = useState<CountdownTime>({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+  const [guestComments, setGuestComments] = useState<GuestComment[]>([])
+  const [commentStatus, setCommentStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
+  const [commentMessage, setCommentMessage] = useState('')
+  const [guestPhotos, setGuestPhotos] = useState<GuestPhoto[]>([])
+  const [photoStatus, setPhotoStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
+  const [photoMessage, setPhotoMessage] = useState('')
+  const [isGuestGalleryOpen, setIsGuestGalleryOpen] = useState(false)
+
+  const updateCountdown = () => {
+    const difference = Math.max(WEDDING_DATE - Date.now(), 0)
+    const days = Math.floor(difference / 86400000)
+    const hours = Math.floor((difference % 86400000) / 3600000)
+    const minutes = Math.floor((difference % 3600000) / 60000)
+    const seconds = Math.floor((difference % 60000) / 1000)
+    setCountdownTime({ days, hours, minutes, seconds })
+  }
 
   const refreshRsvpCount = async () => {
     try {
@@ -106,8 +144,42 @@ function App() {
     }
   }
 
+  const refreshGuestComments = async () => {
+    if (!RSVP_SUBMIT_URL) {
+      return
+    }
+
+    try {
+      const data = await fetchJsonp<{ comments?: GuestComment[] }>(RSVP_SUBMIT_URL, { action: 'comments' })
+      setGuestComments(data.comments || [])
+    } catch {
+      setGuestComments([])
+    }
+  }
+
+  const refreshGuestPhotos = async () => {
+    if (!RSVP_SUBMIT_URL) {
+      return
+    }
+
+    try {
+      const data = await fetchJsonp<{ photos?: GuestPhoto[] }>(RSVP_SUBMIT_URL, { action: 'photos' })
+      setGuestPhotos(data.photos || [])
+    } catch {
+      setGuestPhotos([])
+    }
+  }
+
   useEffect(() => {
     refreshRsvpCount()
+    refreshGuestComments()
+    refreshGuestPhotos()
+  }, [])
+
+  useEffect(() => {
+    updateCountdown()
+    const timer = window.setInterval(updateCountdown, 1000)
+    return () => window.clearInterval(timer)
   }, [])
 
   const handleRsvpSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -133,7 +205,6 @@ function App() {
         })
 
         form.reset()
-        setHasSpouseGuest(false)
         setRsvpStatus('success')
         setRsvpMessage('Thank you. Your RSVP has been received!')
         refreshRsvpCount()
@@ -153,7 +224,6 @@ function App() {
       }
 
       form.reset()
-      setHasSpouseGuest(false)
       setRsvpStatus('success')
       setRsvpMessage('Thank you. Your RSVP has been received!')
       refreshRsvpCount()
@@ -170,12 +240,122 @@ function App() {
       : `https://maps.apple.com/?q=${encodedAddress}`
   }
 
+  const handleCommentSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setCommentStatus('sending')
+    setCommentMessage('')
+
+    const form = event.currentTarget
+    const formData = new FormData(form)
+    const payload = new URLSearchParams()
+    payload.append('action', 'comment')
+    formData.forEach((value, key) => payload.append(key, String(value)))
+
+    try {
+      if (!RSVP_SUBMIT_URL) {
+        const newComment = {
+          name: String(formData.get('name') || ''),
+          message: String(formData.get('message') || ''),
+          submittedAt: new Date().toISOString(),
+        }
+        setGuestComments((comments) => [newComment, ...comments])
+      } else {
+        await fetch(RSVP_SUBMIT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: payload,
+        })
+        window.setTimeout(refreshGuestComments, 1200)
+      }
+
+      form.reset()
+      setCommentStatus('success')
+      setCommentMessage('Your note was added to the board.')
+    } catch {
+      setCommentStatus('error')
+      setCommentMessage('Unable to add your note right now.')
+    }
+  }
+
+  const handlePhotoSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setPhotoStatus('sending')
+    setPhotoMessage('')
+
+    const form = event.currentTarget
+    const formData = new FormData(form)
+    const file = formData.get('photo')
+
+    if (!(file instanceof File) || !file.size) {
+      setPhotoStatus('error')
+      setPhotoMessage('Please choose a photo to upload.')
+      return
+    }
+
+    if (file.size > MAX_GUEST_PHOTO_SIZE) {
+      setPhotoStatus('error')
+      setPhotoMessage('Please choose a photo under 6 MB.')
+      return
+    }
+
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(String(reader.result || ''))
+        reader.onerror = () => reject(new Error('Unable to read photo.'))
+        reader.readAsDataURL(file)
+      })
+
+      const payload = new URLSearchParams()
+      payload.append('action', 'photo')
+      payload.append('name', String(formData.get('name') || ''))
+      payload.append('caption', String(formData.get('caption') || ''))
+      payload.append('fileName', file.name)
+      payload.append('mimeType', file.type || 'image/jpeg')
+      payload.append('photoData', dataUrl.split(',')[1] || '')
+
+      if (RSVP_SUBMIT_URL) {
+        await fetch(RSVP_SUBMIT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: payload,
+        })
+        window.setTimeout(refreshGuestPhotos, 1800)
+      }
+
+      form.reset()
+      setPhotoStatus('success')
+      setPhotoMessage('Your photo was uploaded. Thank you for sharing your view of the day.')
+    } catch {
+      setPhotoStatus('error')
+      setPhotoMessage('Unable to upload your photo right now.')
+    }
+  }
+
   return (
     <div className="App">
       <Navigation />
       <Header onOpenMapOptions={() => setSelectedMapLocation({ label: 'Wedding Address', address: WEDDING_ADDRESS })} />
 
       <main>
+        <section id="countdown" className="section countdown-section">
+          <div className="section-eyebrow">Counting Down</div>
+          <h2>Until we say I do.</h2>
+          <div className="countdown-grid" aria-label="Wedding countdown">
+            {[
+              ['Days', countdownTime.days],
+              ['Hours', countdownTime.hours],
+              ['Minutes', countdownTime.minutes],
+              ['Seconds', countdownTime.seconds],
+            ].map(([label, value]) => (
+              <div className="countdown-card" key={label}>
+                <strong>{String(value).padStart(2, '0')}</strong>
+                <span>{label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <section id="about" className="section story-section">
           <div className="section-eyebrow">Our Story</div>
           <h2>Three years, one very easy yes.</h2>
@@ -221,7 +401,7 @@ function App() {
             </div>
             <p>This is just a planning indicator. The RSVP form will still submit if responses go over the listed count.</p>
           </div>
-          <p className="rsvp-small-print"><em>Just a quick heads up, due to venue capacity and seating limits, our wedding is strictly by invitation only. Invitations are intended only for the people specifically contacted, with the exception of the invitee's married spouses/partners. All planning has been carefully considered before hand.</em></p>
+          <p className="rsvp-small-print"><em>Just a quick heads up, due to venue capacity and seating limits, our wedding is strictly by invitation only. Invitations are intended only for the people specifically contacted. Each invited guest should submit their own RSVP individually.</em></p>
           <p className="rsvp-small-print"><em>Please also note that our wedding will be an adults-only celebration, and we will not be able to accommodate children. We hope you understand and can make arrangements so you can celebrate with us!</em></p>
           <p className="rsvp-small-print"><em>We really appreciate everyone's understanding as we finalize numbers for the big day!</em></p>
           <p className="rsvp-update-note">Plans change? Maybe you are coming on the party bus after all? Just submit another RSVP!</p>
@@ -285,26 +465,6 @@ function App() {
               </div>
             </div>
 
-            <label className="rsvp-checkbox">
-              <input
-                name="hasSpouseGuest"
-                type="checkbox"
-                checked={hasSpouseGuest}
-                onChange={(event) => setHasSpouseGuest(event.target.checked)}
-              />
-              I am bringing my spouse.
-            </label>
-            <p className="rsvp-spouse-note">
-              To help us keep the day intimate and within our venue limits, additional guests are limited to spouses only unless a non-spouse guest has been specifically approved by the wedding party.
-            </p>
-
-            {hasSpouseGuest && (
-              <label>
-                Spouse Guest Name
-                <input name="spouseName" type="text" autoComplete="name" required />
-              </label>
-            )}
-
             <label>
               Message
               <textarea name="message" rows={3} placeholder="Anything else we should know?" required />
@@ -320,6 +480,46 @@ function App() {
               </p>
             )}
           </form>
+        </section>
+
+        <section id="guest-board" className="section guest-board-section">
+          <div className="section-eyebrow">Guest Notes</div>
+          <h2>Leave a note on our chalkboard.</h2>
+          <div className="chalkboard">
+            <div className="chalkboard-notes">
+              {guestComments.length ? (
+                guestComments.slice(0, 12).map((comment, index) => (
+                  <article className="chalk-note" key={`${comment.name}-${comment.submittedAt || index}`}>
+                    <p>{comment.message}</p>
+                    <span>{comment.name}</span>
+                  </article>
+                ))
+              ) : (
+                <article className="chalk-note">
+                  <p>Be the first to leave Alicia and Kevin a note.</p>
+                  <span>Guest board</span>
+                </article>
+              )}
+            </div>
+            <form className="chalk-form" onSubmit={handleCommentSubmit}>
+              <label>
+                Your Name
+                <input name="name" type="text" autoComplete="name" required />
+              </label>
+              <label>
+                Your Message
+                <textarea name="message" rows={4} maxLength={220} required />
+              </label>
+              <button className="rsvp-button" type="submit" disabled={commentStatus === 'sending'}>
+                {commentStatus === 'sending' ? 'Adding Note...' : 'Add To Chalkboard'}
+              </button>
+              {commentMessage && (
+                <p className={`rsvp-form-message ${commentStatus === 'error' ? 'is-error' : 'is-success'}`}>
+                  {commentMessage}
+                </p>
+              )}
+            </form>
+          </div>
         </section>
 
         <section id="contact" className="section contact-section">
@@ -356,6 +556,37 @@ function App() {
             <div className="placeholder-image gallery-image-two"></div>
             <div className="placeholder-image gallery-image-three"></div>
           </div>
+          <div className="guest-gallery-panel">
+            <div>
+              <h3>Guest Taken Gallery</h3>
+              <p>Share your favorite wedding photo from your point of view, then open the guest gallery to see what everyone captured.</p>
+            </div>
+            <button className="gallery-open-button" type="button" onClick={() => setIsGuestGalleryOpen(true)}>
+              Open Guest Gallery
+            </button>
+          </div>
+          <form className="guest-photo-form" onSubmit={handlePhotoSubmit}>
+            <label>
+              Your Name
+              <input name="name" type="text" autoComplete="name" required />
+            </label>
+            <label>
+              Caption
+              <input name="caption" type="text" maxLength={120} placeholder="Optional but encouraged" />
+            </label>
+            <label className="guest-photo-file">
+              Upload Photo
+              <input name="photo" type="file" accept="image/*" required />
+            </label>
+            <button className="rsvp-button" type="submit" disabled={photoStatus === 'sending'}>
+              {photoStatus === 'sending' ? 'Uploading...' : 'Upload Photo'}
+            </button>
+            {photoMessage && (
+              <p className={`rsvp-form-message ${photoStatus === 'error' ? 'is-error' : 'is-success'}`}>
+                {photoMessage}
+              </p>
+            )}
+          </form>
         </section>
 
         <section id="timeline" className="section timeline-section">
@@ -467,6 +698,48 @@ function App() {
               >
                 Open in iMaps for iOS
               </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isGuestGalleryOpen && (
+        <div
+          className="map-modal-backdrop"
+          role="presentation"
+          onClick={() => setIsGuestGalleryOpen(false)}
+        >
+          <div
+            className="guest-gallery-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="guest-gallery-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              className="map-modal-close"
+              type="button"
+              onClick={() => setIsGuestGalleryOpen(false)}
+              aria-label="Close guest gallery"
+            >
+              x
+            </button>
+            <p className="map-modal-kicker">Guest Taken</p>
+            <h2 id="guest-gallery-title">Wedding Through Your Eyes</h2>
+            <div className="guest-gallery-grid">
+              {guestPhotos.length ? (
+                guestPhotos.map((photo, index) => (
+                  <figure key={`${photo.imageUrl}-${index}`}>
+                    <img src={photo.imageUrl} alt={photo.caption || `Wedding photo uploaded by ${photo.name}`} />
+                    <figcaption>
+                      {photo.caption && <span>{photo.caption}</span>}
+                      <strong>{photo.name}</strong>
+                    </figcaption>
+                  </figure>
+                ))
+              ) : (
+                <p className="guest-gallery-empty">No guest photos have been uploaded yet.</p>
+              )}
             </div>
           </div>
         </div>

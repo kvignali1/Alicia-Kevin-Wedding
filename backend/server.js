@@ -220,16 +220,9 @@ const server = createServer(async (req, res) => {
       const email = cleanText(body.email)
       const attending = cleanText(body.attending)
       const joiningPartyBus = cleanText(body.joiningPartyBus)
-      const spouseName = cleanText(body.spouseName)
-      const hasSpouseGuest = body.hasSpouseGuest === 'on' || body.hasSpouseGuest === true
 
       if (!fullName || !email || !attending || !joiningPartyBus) {
         send(res, 400, { error: 'Name, email, attendance, and party bus response are required.' })
-        return
-      }
-
-      if (hasSpouseGuest && !spouseName) {
-        send(res, 400, { error: 'Please enter your spouse guest name.' })
         return
       }
 
@@ -264,27 +257,7 @@ const server = createServer(async (req, res) => {
         rsvps.push(newRsvp)
       }
 
-      const spouseLinkedTo = normalizeName(fullName)
-      const rsvpsWithoutOldSpouse = rsvps.filter((rsvp) => {
-        return !((rsvp.rsvpType || 'Primary') === 'Spouse Guest' && normalizeName(rsvp.linkedTo) === spouseLinkedTo)
-      })
-
-      if (hasSpouseGuest) {
-        rsvpsWithoutOldSpouse.push({
-          id: randomUUID(),
-          submittedAt,
-          fullName: spouseName,
-          email: '',
-          phone: '',
-          attending,
-          joiningPartyBus,
-          rsvpType: 'Spouse Guest',
-          linkedTo: fullName,
-          message: `Spouse guest of ${fullName}`,
-        })
-      }
-
-      await writeRsvps(rsvpsWithoutOldSpouse)
+      await writeRsvps(rsvps)
       send(res, existingPrimaryIndex >= 0 ? 200 : 201, {
         ok: true,
         mode: existingPrimaryIndex >= 0 ? 'updated' : 'created',

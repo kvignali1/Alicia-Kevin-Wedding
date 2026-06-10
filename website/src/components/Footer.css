@@ -1,12 +1,12 @@
 /* Footer Component Styles */
 .footer {
   background:
-    linear-gradient(135deg, #1f1714, #2f2019);
+    linear-gradient(135deg, #071524, #102a43 58%, #4d1024);
   color: white;
   text-align: center;
   padding: 2.4rem 0 calc(2.4rem + env(safe-area-inset-bottom));
   margin-top: 2rem;
-  border-top: 1px solid rgba(198, 163, 67, 0.24);
+  border-top: 1px solid rgba(244, 217, 226, 0.22);
 }
 
 .footer-content {
@@ -17,7 +17,7 @@
 
 .footer p {
   margin-bottom: 0.8rem;
-  color: rgba(255, 253, 249, 0.86);
+  color: rgba(255, 250, 242, 0.86);
   font-family: 'Georgia', serif;
 }
 
@@ -28,7 +28,7 @@
 }
 
 .footer-links a {
-  color: #e0c264;
+  color: #f4d9e2;
   text-decoration: none;
   font-size: 0.9rem;
   min-height: 44px;
@@ -38,7 +38,7 @@
 }
 
 .footer-links a:hover {
-  color: #F8F1E9;
+  color: #fffaf2;
   transform: translateY(-1px);
 }
 

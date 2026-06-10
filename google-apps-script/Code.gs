@@ -1,6 +1,9 @@
 const SHEET_NAME = 'RSVPs'
 const DEFAULT_SHEET_NAME = 'Sheet1'
 const SPREADSHEET_ID = '1ALh0r85_RGQI1NOB8hrPLdQ1TVvcozUdlmoF1AsG06k'
+const COMMENTS_SHEET_NAME = 'Guest Comments'
+const PHOTOS_SHEET_NAME = 'Guest Photos'
+const PHOTO_FOLDER_NAME = 'Wedding Guest Photo Uploads'
 
 const HEADERS = [
   'Submitted At',
@@ -14,21 +17,42 @@ const HEADERS = [
   'Message',
 ]
 
+const COMMENT_HEADERS = [
+  'Submitted At',
+  'Name',
+  'Message',
+  'Visible',
+]
+
+const PHOTO_HEADERS = [
+  'Submitted At',
+  'Name',
+  'Caption',
+  'File Name',
+  'File ID',
+  'Image URL',
+  'Visible',
+]
+
 function doPost(event) {
   const data = parseRequest(event)
+  const action = cleanText(data.action).toLowerCase()
+
+  if (action === 'comment') {
+    return handleCommentPost(data)
+  }
+
+  if (action === 'photo') {
+    return handlePhotoPost(data)
+  }
+
   const fullName = cleanText(data.fullName)
   const email = cleanText(data.email)
   const attending = cleanText(data.attending)
   const joiningPartyBus = cleanText(data.joiningPartyBus)
-  const hasSpouseGuest = data.hasSpouseGuest === 'on' || data.hasSpouseGuest === true || data.hasSpouseGuest === 'true'
-  const spouseName = cleanText(data.spouseName)
 
   if (!fullName || !email || !attending || !joiningPartyBus) {
     return jsonResponse({ ok: false, error: 'Name, email, attendance, and party bus response are required.' })
-  }
-
-  if (hasSpouseGuest && !spouseName) {
-    return jsonResponse({ ok: false, error: 'Please enter your spouse guest name.' })
   }
 
   const sheet = getSheet()
@@ -51,22 +75,6 @@ function doPost(event) {
     sheet.getRange(primaryRow, 1, 1, HEADERS.length).setValues([primaryValues])
   } else {
     sheet.appendRow(primaryValues)
-  }
-
-  deleteLinkedSpouseRows(sheet, headerMap, fullName)
-
-  if (hasSpouseGuest) {
-    sheet.appendRow(makeRowValues({
-      submittedAt,
-      fullName: spouseName,
-      email: '',
-      phone: '',
-      attending,
-      joiningPartyBus,
-      rsvpType: 'Spouse Guest',
-      linkedTo: fullName,
-      message: `Spouse guest of ${fullName}`,
-    }))
   }
 
   return jsonResponse({ ok: true, mode: primaryRow ? 'updated' : 'created' })
@@ -114,26 +122,6 @@ function findPrimaryRsvpRow(sheet, headerMap, fullName, email) {
   return 0
 }
 
-function deleteLinkedSpouseRows(sheet, headerMap, fullName) {
-  const lastRow = sheet.getLastRow()
-  if (lastRow < 2) {
-    return
-  }
-
-  const rows = sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).getValues()
-  const targetName = normalizeName(fullName)
-
-  for (let index = rows.length - 1; index >= 0; index -= 1) {
-    const row = rows[index]
-    const rowType = cleanText(row[headerMap['RSVP Type']]).toLowerCase()
-    const linkedTo = normalizeName(row[headerMap['Linked To']])
-
-    if (rowType === 'spouse guest' && linkedTo === targetName) {
-      sheet.deleteRow(index + 2)
-    }
-  }
-}
-
 function getHeaderMap(sheet) {
   const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]
   return headers.reduce((map, header, index) => {
@@ -155,6 +143,24 @@ function doGet(event) {
 
   if (params.action === 'count') {
     const payload = getRsvpCountPayload()
+    if (params.callback) {
+      return javascriptResponse(`${params.callback}(${JSON.stringify(payload)});`)
+    }
+
+    return jsonResponse(payload)
+  }
+
+  if (params.action === 'comments') {
+    const payload = getGuestCommentsPayload()
+    if (params.callback) {
+      return javascriptResponse(`${params.callback}(${JSON.stringify(payload)});`)
+    }
+
+    return jsonResponse(payload)
+  }
+
+  if (params.action === 'photos') {
+    const payload = getGuestPhotosPayload()
     if (params.callback) {
       return javascriptResponse(`${params.callback}(${JSON.stringify(payload)});`)
     }
@@ -207,6 +213,92 @@ function parseRequest(event) {
   return event.parameter || {}
 }
 
+function handleCommentPost(data) {
+  const name = cleanText(data.name)
+  const message = cleanText(data.message)
+
+  if (!name || !message) {
+    return jsonResponse({ ok: false, error: 'Name and message are required.' })
+  }
+
+  const sheet = getNamedSheet(COMMENTS_SHEET_NAME, COMMENT_HEADERS)
+  sheet.appendRow([new Date(), name, message, 'Yes'])
+
+  return jsonResponse({ ok: true })
+}
+
+function handlePhotoPost(data) {
+  const name = cleanText(data.name)
+  const caption = cleanText(data.caption)
+  const fileName = cleanText(data.fileName) || `guest-photo-${Date.now()}.jpg`
+  const mimeType = cleanText(data.mimeType) || 'image/jpeg'
+  const photoData = cleanText(data.photoData)
+
+  if (!name || !photoData) {
+    return jsonResponse({ ok: false, error: 'Name and photo are required.' })
+  }
+
+  const folder = getGuestPhotoFolder()
+  const bytes = Utilities.base64Decode(photoData)
+  const blob = Utilities.newBlob(bytes, mimeType, fileName)
+  const file = folder.createFile(blob)
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW)
+
+  const fileId = file.getId()
+  const imageUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`
+  const sheet = getNamedSheet(PHOTOS_SHEET_NAME, PHOTO_HEADERS)
+  sheet.appendRow([new Date(), name, caption, fileName, fileId, imageUrl, 'Yes'])
+
+  return jsonResponse({ ok: true, imageUrl })
+}
+
+function getGuestCommentsPayload() {
+  const sheet = getNamedSheet(COMMENTS_SHEET_NAME, COMMENT_HEADERS)
+  const lastRow = sheet.getLastRow()
+
+  if (lastRow < 2) {
+    return { ok: true, comments: [] }
+  }
+
+  const headerMap = getHeaderMap(sheet)
+  const rows = sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).getValues()
+  const comments = rows
+    .filter((row) => cleanText(row[headerMap.Visible]).toLowerCase() !== 'no')
+    .map((row) => ({
+      submittedAt: formatDate(row[headerMap['Submitted At']]),
+      name: cleanText(row[headerMap.Name]),
+      message: cleanText(row[headerMap.Message]),
+    }))
+    .filter((comment) => comment.name && comment.message)
+    .reverse()
+
+  return { ok: true, comments }
+}
+
+function getGuestPhotosPayload() {
+  const sheet = getNamedSheet(PHOTOS_SHEET_NAME, PHOTO_HEADERS)
+  const lastRow = sheet.getLastRow()
+
+  if (lastRow < 2) {
+    return { ok: true, photos: [] }
+  }
+
+  const headerMap = getHeaderMap(sheet)
+  const rows = sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).getValues()
+  const photos = rows
+    .filter((row) => cleanText(row[headerMap.Visible]).toLowerCase() !== 'no')
+    .map((row) => ({
+      submittedAt: formatDate(row[headerMap['Submitted At']]),
+      name: cleanText(row[headerMap.Name]),
+      caption: cleanText(row[headerMap.Caption]),
+      imageUrl: cleanText(row[headerMap['Image URL']]),
+    }))
+    .filter((photo) => photo.name && photo.imageUrl)
+    .reverse()
+
+  return { ok: true, photos }
+}
+
 function getSheet() {
   const spreadsheet = SPREADSHEET_ID
     ? SpreadsheetApp.openById(SPREADSHEET_ID)
@@ -238,9 +330,42 @@ function getSheet() {
   return sheet
 }
 
+function getNamedSheet(sheetName, headers) {
+  const spreadsheet = SPREADSHEET_ID
+    ? SpreadsheetApp.openById(SPREADSHEET_ID)
+    : SpreadsheetApp.getActiveSpreadsheet()
+  let sheet = spreadsheet.getSheetByName(sheetName)
+
+  if (!sheet) {
+    sheet = spreadsheet.insertSheet(sheetName)
+  }
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(headers)
+    sheet.setFrozenRows(1)
+  } else {
+    ensureHeadersForSheet(sheet, headers)
+  }
+
+  return sheet
+}
+
+function getGuestPhotoFolder() {
+  const folders = DriveApp.getFoldersByName(PHOTO_FOLDER_NAME)
+  if (folders.hasNext()) {
+    return folders.next()
+  }
+
+  return DriveApp.createFolder(PHOTO_FOLDER_NAME)
+}
+
 function ensureHeaders(sheet) {
-  for (let index = 0; index < HEADERS.length; index += 1) {
-    const desiredHeader = HEADERS[index]
+  ensureHeadersForSheet(sheet, HEADERS)
+}
+
+function ensureHeadersForSheet(sheet, headers) {
+  for (let index = 0; index < headers.length; index += 1) {
+    const desiredHeader = headers[index]
     const currentHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(cleanText)
     const currentIndex = currentHeaders.indexOf(desiredHeader)
 
@@ -253,6 +378,14 @@ function ensureHeaders(sheet) {
 
 function cleanText(value) {
   return String(value || '').trim()
+}
+
+function formatDate(value) {
+  if (value instanceof Date) {
+    return value.toISOString()
+  }
+
+  return cleanText(value)
 }
 
 function jsonResponse(payload) {

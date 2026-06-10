@@ -62,6 +62,27 @@ Then rerun the `Deploy Website To GitHub Pages` workflow.
 
 Open the Google Sheet from the Google Sheets app or your phone browser.
 
+The same Apps Script also stores guest chalkboard notes and guest photo metadata. It will create these extra tabs automatically:
+
+```text
+Guest Comments
+Guest Photos
+```
+
+To hide a chalkboard comment or guest photo from the website without deleting it, change its `Visible` value to:
+
+```text
+No
+```
+
+Guest photo uploads are saved to a Google Drive folder named:
+
+```text
+Wedding Guest Photo Uploads
+```
+
+When you deploy the updated script, Google may ask you to authorize Drive access because the upload feature creates shared image files.
+
 To export to Excel:
 
 1. Open the Sheet
